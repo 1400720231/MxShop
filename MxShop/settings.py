@@ -148,7 +148,6 @@ STATICFILES_DIRS = [
 ]
 
 
-
 MEDIA_URL = '/media/'  # 不能随便取 因为用的时候src="{{MEDIA_URL}}/image/..."表示按照这个路径找
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 """
