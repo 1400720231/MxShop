@@ -1,18 +1,13 @@
 # 系统包
 from datetime import datetime
 
-
-#三方包
+# 三方包
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-
-
 # 自定义的包
-
-
-
 # 个人信息
+
 class UserProfile(AbstractUser):
 	"""
 	用户数据表
