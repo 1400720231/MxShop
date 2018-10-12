@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'goods/$', GoodstListView.as_view(), name='goods-list'),
 
     # -------下面是drf相关路由---------
-    # drf登陆路由
+    # drf登陆路由|在drf的browser页面登陆有效
     url(r'^api-auth/', include('rest_framework.urls')),
     # drf APIView
     url(r'goods/$', GoodList.as_view(), name='goods-list'),

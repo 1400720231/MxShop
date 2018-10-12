@@ -155,3 +155,17 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT只能设置一个，不然她不知道到底存放再哪里，和static不同，static是准备取出来用的，可以到设置的目录里找就行了，
 但是MEDIA_ROOT是为了保存上传文件的地方，你要是设置多个，他不晓得存在什么地方。可以，没毛病！
 """
+
+
+
+"""
+drf 全局配置:REST_FRAMEWORK配置，比如分页等。
+但是当在serilizer中自定义pagination_class后，在
+全局的REST_FRAMEWORK配置就不需要配置DEFAULT_PAGINATION_CLASS了
+"""
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+#     'PAGE_SIZE': 10 # 每个10个，注意如果你的数据不多，只够一页数据的话，browser页面是没有分页栏显示的
+#
+# }
