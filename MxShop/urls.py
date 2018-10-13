@@ -23,9 +23,16 @@ from goods.view_base import  GoodList
 
 # 文档函数
 from rest_framework.documentation import include_docs_urls
-from goods.views import  GoodstListView
+from rest_framework.routers import DefaultRouter
+from goods.views import GoodstListView
 
+router = DefaultRouter()
+# goods_list = GoodstListView.as_view({
+#     'get': 'list',
+#
+# })
 
+router.register(r'goods', GoodstListView)
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
     url(r'^ueditor/', include('DjangoUeditor.urls')),
@@ -33,13 +40,21 @@ urlpatterns = [
     url(r'^media/(?P<path>.*)$', serve, {'document_root': MEDIA_ROOT}),
 
     # 商品列表页（原生django cbv完成的）
-    url(r'goods/$', GoodstListView.as_view(), name='goods-list'),
+    # url(r'goods/$', GoodList.as_view(), name='goods-list'),
 
     # -------下面是drf相关路由---------
+
+    # viewser+router方式配置路由
+    url(r'', include(router.urls)),
+
     # drf登陆路由|在drf的browser页面登陆有效
     url(r'^api-auth/', include('rest_framework.urls')),
-    # drf APIView
-    url(r'goods/$', GoodList.as_view(), name='goods-list'),
+
+    # drf 路由，views.py中的方式一 、二、三都可以用这个路由
+    # url(r'goods/$', GoodstListView.as_view(), name='goods-list'),
+
+    # viewset方式对应的路由形式
+    # url(r'goods/$', goods_list, name='goods-list'),
     # drf文档路由
     url(r'docs/', include_docs_urls(title="慕学生鲜"))
 ]

@@ -73,16 +73,69 @@ class GoodstListView(mixins.ListModelMixin, generics.GenericAPIView):
 """
 
 """
-方式三：generics.ListAPIView
+方式三：generics.ListAPIView并且实现自定义分页功能
 
 generics.ListAPIView(mixins.ListModelMixin, generics.GenericAPIView))
 源码中就是继承了ListModelMixin和GenericAPIView，这是可以理解的，因为你能想到把
 这些用的多的功能组合，drf肯定也能组合好直接给你用。
+
+自定义分页class
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 10 # 每页默认数据个数
+    page_size_query_param = "page_size"  # 自定义获取每页数据数量的参数，最大不会超过max_page_size=100
+    page_query_param = "p" # 第几页
+    max_page_size = 100  # 每页最大回去个数
+
+
+class GoodstListView(generics.ListAPIView):
+    
+    这里是对GoodstListView的解释信息，在浏览器可以看到这条信息
+    
+    queryset = Goods.objects.all()
+    serializer_class = GoodsSerializer
+    pagination_class = StandardResultsSetPagination
 """
 
 """
-自定义分页class
+方式4： viewsets + router
+viewsets.GenericView:
+    主要作用是重写了as_view()方法，主要是可以完成方法之间的绑定。
+    比如这里的方式4是viewsets.GenericView+mixins.ListModelMixin，
+    由方式二可知我们需要重载get方法来实现数据展示的功能，as_view()被重写
+    之后可以另外实现在urls.py中如下：
+    from goods.views import GoodsListViewSet
+    goods_list = GoodsListViewSet.as_view(
+            {
+            'get':list,
+            }
+            )
+    urlpatterns = [
+        url(r'goods/$', goods_list, name='xxx'),
+    ]
+    
+    ------------
+    所以'get':'list'的意义就是完成了方式二中的重载get方式，也就是实现的下面这几行代码（注意get和self.list）：
+    def get(self,request,*args,**kwargs):
+        return self.list(request,*args,**kwargs)
+        
+但是这样写{'get':'list'}还是有点麻烦，drf有没有也顺便帮忙稍微封装一下呢？router的作用就是在此
+urls.py中如下：
+from rest_framework.routers import DefaultRouter
+from django.conf.urls import url, include
+from goods.views import GoodstListView
+
+
+router = DefaultRouter()
+router.register(r'goods', GoodstListView) # 注册goods路由,会自动实现上面的'get':'list'的功能  
+ urlpatterns = [
+        url(r'', include(router.urls)),
+     
+    ]
+
+
 """
+
+# 自定义分页class
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -92,10 +145,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100  # 每页最大回去个数
 
 
-class GoodstListView(generics.ListAPIView):
-    """
-    这里是对GoodstListView的解释信息，在浏览器可以看到这条信息
-    """
+class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Goods.objects.all()
     serializer_class = GoodsSerializer
     pagination_class = StandardResultsSetPagination
