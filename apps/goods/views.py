@@ -11,6 +11,8 @@ from rest_framework import status
 from rest_framework import  generics
 from rest_framework import mixins
 from rest_framework import viewsets
+# drf 过滤
+from django_filters.rest_framework import DjangoFilterBackend
 
 """
 最底层的drf APIView,继承与django的View(from django.views.generic.base import View)
@@ -145,7 +147,37 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100  # 每页最大回去个数
 
 
+"""
+# 过滤方式一 重载get_queryset方法，和django中是一样的用法
 class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = Goods.objects.all()
+    # queryset = Goods.objects.all() # get_queryse重载后这个就没有用了
     serializer_class = GoodsSerializer
     pagination_class = StandardResultsSetPagination
+    
+    def get_queryset(self):
+        return Goods.objects.filter(shop_price__gt=100)
+"""
+
+
+# 过滤方式二：drf filter
+"""
+pip install django_filters
+在settings.py中installed_apps中配置
+注意一：
+filter_fields = ('name', 'shop_price')
+这样的filter只能是精确匹配，不能模糊匹配
+注意二：
+要像模糊匹配可以自定义一个filter类，django_filter官网：https://django-filter.readthedocs.io/en/master/
+from  .filters import ProductFilter
+filter_class = ProductFilter
+注释掉filter_fields = ('name', 'shop_price')这一行
+"""
+from  .filters import ProductFilter
+class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Goods.objects.all() # get_queryse重载后这个就没有用了
+    serializer_class = GoodsSerializer # 序列化器
+    pagination_class = StandardResultsSetPagination  # 分页器
+    # 这里的元组一定要加逗号！！！！不然后报错！！！
+    filter_backends = (DjangoFilterBackend,) # 过滤器
+    # filter_fields = ('name', 'shop_price')  # 指定过滤字段
+    filter_class = ProductFilter
