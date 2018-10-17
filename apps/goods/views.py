@@ -163,21 +163,87 @@ class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
 """
 pip install django_filters
 在settings.py中installed_apps中配置
-注意一：
-filter_fields = ('name', 'shop_price')
-这样的filter只能是精确匹配，不能模糊匹配
-注意二：
-要像模糊匹配可以自定义一个filter类，django_filter官网：https://django-filter.readthedocs.io/en/master/
-from  .filters import ProductFilter
-filter_class = ProductFilter
-注释掉filter_fields = ('name', 'shop_price')这一行
-"""
-from  .filters import ProductFilter
+方式一：
+from django_filters.rest_framework import DjangoFilterBackend
 class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = Goods.objects.all() # get_queryse重载后这个就没有用了
     serializer_class = GoodsSerializer # 序列化器
     pagination_class = StandardResultsSetPagination  # 分页器
     # 这里的元组一定要加逗号！！！！不然后报错！！！
-    filter_backends = (DjangoFilterBackend,) # 过滤器
-    # filter_fields = ('name', 'shop_price')  # 指定过滤字段
+    filter_backends = (DjangoFilterBackend, ) # 过滤器，是django的过滤器，
+    filter_fields = ('name', 'shop_price')  # 指定过滤字段
+缺点：
+    filter_fields中的字段只能精确匹配，要想模糊查询，可以按照方式二中的办法自定义filter_class
+    
+
+方式二：
+要像模糊匹配可以自定义一个filter类，django_filter官网：https://django-filter.readthedocs.io/en/master/
+filters.py下：
+
+import django_filters
+from .models import Goods
+class ProductFilter(django_filters.rest_framework.FilterSet):
+    # 自定义一个字段，过滤model中的shop_price字段， 方式为大于等于(gte)
+    price_min = django_filters.NumberFilter(field_name='shop_price', lookup_expr='gte')
+    # 自定义一个字段，过滤model中的shop_price字段， 方式为大于等于(lte)
+    price_max = django_filters.NumberFilter(field_name='shop_price', lookup_expr='lte')
+    # 自定义一个字段，过滤model中的category__name(category的外键实例的name字段， 方式为不区分大小写模糊查询（icontains）
+    category_name = django_filters.CharFilter(field_name='category__name', lookup_expr='icontains')
+    # 定义一个字段，过滤model中的name, 方式为不区分大小写模糊查询（icontains）
+    name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
+
+    class Meta:
+        model = Goods
+        fields = ['price_min', 'price_max', 'name', 'category_name']
+
+views.py下：
+
+from  .filters import ProductFilter
+
+注释掉filter_fields = ('name', 'shop_price')这一行，因为在filter_class中定义了
+用来搜索的fields=['name',......]
+class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Goods.objects.all() # get_queryse重载后这个就没有用了
+    serializer_class = GoodsSerializer # 序列化器
+    pagination_class = StandardResultsSetPagination  # 分页器
+    # 这里的元组一定要加逗号！！！！不然后报错！！！
+    filter_backends = (DjangoFilterBackend, ) # 过滤器，DjangoFilterBackend是django的过滤器，
     filter_class = ProductFilter
+   
+    
+
+方式三：
+上面的DjangoFilterBackend就是django中的过滤方式，drf中也有一个方式可以过滤，SearchFilter。
+SearchFilter是用来做模糊查询的最佳效果
+
+from .filters import ProductFilter
+from rest_framework.filters import SearchFilter
+class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Goods.objects.all() # get_queryse重载后这个就没有用了
+    serializer_class = GoodsSerializer # 序列化器
+    pagination_class = StandardResultsSetPagination  # 分页器
+    # 这里的元组一定要加逗号！！！！不然后报错！！！
+    filter_backends = (DjangoFilterBackend, ProductFilter) # 过滤器，DjangoFilterBackend是django的过滤器，
+    filter_class = ProductFilter
+    search_fields =('=name','^goods_desc', 'goods_brief')
+    # =name表示对name字段精确匹配| ^goods_desc表示对goods_desc以搜索内容开头进行搜索| goods_brief就是模糊搜索
+"""
+from .filters import ProductFilter
+from rest_framework.filters import SearchFilter,OrderingFilter
+class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    DjangoFilterBackend  过滤功能
+    SearchFilter  搜索功能
+    OrderingFilter  排序功能
+    """
+    queryset = Goods.objects.all() # get_queryse重载后这个就没有用了
+    serializer_class = GoodsSerializer # 序列化器
+    pagination_class = StandardResultsSetPagination  # 分页器
+    # 这里的元组一定要加逗号！！！！不然后报错！！！
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter) # 过滤器，是django的过滤器，
+    filter_class = ProductFilter
+    # SearchFilter指定搜索字段
+    search_fields = ('=name', '^goods_desc', 'goods_brief')
+    # OrderingFilter指定排序指端| 根据sold_num和add_time,shop_price排序
+    # 也可以指定非时间或者数字字段排序，比如这里的name，但是好像从排序结果来看没有什么意义。。。
+    ordering_fields =('sold_num', 'add_time', 'shop_price', 'name')
