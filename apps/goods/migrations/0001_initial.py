@@ -64,7 +64,7 @@ class Migration(migrations.Migration):
                 ('category_type', models.IntegerField(choices=[(1, '一级类目'), (2, '二级类目'), (3, '三级类目')], help_text='类目级别', verbose_name='类目级别')),
                 ('is_tab', models.BooleanField(default=False, help_text='是否导航', verbose_name='是否导航')),
                 ('add_time', models.DateTimeField(default=datetime.datetime.now, verbose_name='添加时间')),
-                ('parents_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sub_cat', to='goods.GoodsCategory', verbose_name='父类目级')),
+                ('parents_category', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sub_cat', to='goods.GoodsCategory', verbose_name='父类目级')),
             ],
             options={
                 'verbose_name': '商品类别',

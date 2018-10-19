@@ -24,7 +24,7 @@ from goods.view_base import  GoodList
 # 文档函数
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
-from goods.views import GoodstListView
+from goods.views import GoodstViewSet, CategoryViewset
 
 router = DefaultRouter()
 # goods_list = GoodstListView.as_view({
@@ -32,7 +32,8 @@ router = DefaultRouter()
 #
 # })
 
-router.register(r'goods', GoodstListView)
+router.register(r'goods', GoodstViewSet)
+router.register(r'categorys', CategoryViewset)
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
     url(r'^ueditor/', include('DjangoUeditor.urls')),

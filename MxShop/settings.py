@@ -51,10 +51,12 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'rest_framework',
-    'django_filters',
+    'django_filters', # django 的搜索模块依赖
+    'corsheaders',  # 从服务器段解决前后端分离访问的时候的跨域的问题
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # corsheaders对应的中间件，优先级尽可能的高，也就是放在最前面
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,6 +65,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'MxShop.urls'
 
@@ -157,6 +161,13 @@ MEDIA_ROOT只能设置一个，不然她不知道到底存放再哪里，和stat
 但是MEDIA_ROOT是为了保存上传文件的地方，你要是设置多个，他不晓得存在什么地方。可以，没毛病！
 """
 
+# corsheaders对应的配置，表示对所有的ip都支持跨域|https://github.com/ottoyiu/django-cors-headers
+#跨域增加忽略
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+
+
 
 
 """
@@ -170,3 +181,5 @@ drf 全局配置:REST_FRAMEWORK配置，比如分页等。
 #     'PAGE_SIZE': 10 # 每个10个，注意如果你的数据不多，只够一页数据的话，browser页面是没有分页栏显示的
 #
 # }
+
+

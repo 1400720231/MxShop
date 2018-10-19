@@ -15,9 +15,9 @@ xadmin.site.register(BannerCourse, BannerCourseAdmin)
 """
 
 class GoodsCategoryAdmin(object):
-	list_display = ['name','desc','code','category_type','parents_type','is_tab','add_time']
-	search_fields = ['name','desc','code','category_type','parents_type','is_tab','add_time']
-	list_filter = ['name','desc','code','category_type','parents_type','is_tab','add_time']
+	list_display = ['name','desc','code','category_type','parents_category','is_tab','add_time']
+	search_fields = ['name','desc','code','category_type','parents_category','is_tab','add_time']
+	list_filter = ['name','desc','code','category_type','parents_category','is_tab','add_time']
 
 
 class GoodsCategoryBrandAdmin(object):
@@ -28,8 +28,8 @@ class GoodsCategoryBrandAdmin(object):
 
 
 class GoodsAdmin(object):
-	list_display = ['category','goods_sn','name','click_num','sold_num','fav_num','goods_num',
-					'market_price','shop_price','goods_brief','goods_desc','ship_free','goods_front_image',
+	list_display = ['category','goods_sn','name','click_num','sold_num', 'fav_num', 'goods_num',
+					'market_price','shop_price','goods_brief','goods_desc', 'ship_free', 'goods_front_image',
 					'is_new','is_hot','add_time']
 	search_fields =['category','goods_sn','name','click_num','sold_num','fav_num','goods_num',
 					'market_price','shop_price','goods_brief','goods_desc','ship_free','is_new','is_hot','add_time']

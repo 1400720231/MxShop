@@ -1,8 +1,8 @@
 from django.shortcuts import render
 
 # Create your views here.
-from .models import Goods
-from goods.serializer import GoodsSerializer
+from .models import Goods, GoodsCategory
+from goods.serializer import GoodsSerializer,CategorySerializer
 from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 from rest_framework.views import APIView
@@ -143,7 +143,7 @@ router.register(r'goods', GoodstListView) # 注册goods路由,会自动实现上
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10 # 每页默认数据个数
     page_size_query_param = "page_size"  # 自定义获取每页数据数量的参数，最大不会超过max_page_size=100
-    page_query_param = "p" # 第几页
+    page_query_param = "page" # 第几页
     max_page_size = 100  # 每页最大回去个数
 
 
@@ -230,7 +230,7 @@ class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
 """
 from .filters import ProductFilter
 from rest_framework.filters import SearchFilter,OrderingFilter
-class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
+class GoodstViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     DjangoFilterBackend  过滤功能
     SearchFilter  搜索功能
@@ -247,3 +247,13 @@ class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
     # OrderingFilter指定排序指端| 根据sold_num和add_time,shop_price排序
     # 也可以指定非时间或者数字字段排序，比如这里的name，但是好像从排序结果来看没有什么意义。。。
     ordering_fields =('sold_num', 'add_time', 'shop_price', 'name')
+
+
+class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+    """
+    list:
+        商品分类列表数据,类目数据很少就不用分页，只序列化就行了
+
+    """
+    queryset = GoodsCategory.objects.filter(category_type=1)
+    serializer_class = CategorySerializer
