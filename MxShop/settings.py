@@ -12,8 +12,11 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import sys
+import datetime
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # 表示最外面的那个MxShop文件夹的路径,注意是路径.,不是文件夹的名字.
+# from django.conf.global_settings import AUTHENTICATION_BACKENDS
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 把第三方路插入django项目文件环境路径,可直接import apps中的包 而不用from apps import ...
 # sys.path.insert(0, BASE_DIR)
@@ -55,6 +58,8 @@ INSTALLED_APPS = [
     'corsheaders',  # 从服务器段解决前后端分离访问的时候的跨域的问题
     'rest_framework.authtoken', # 会新建一张表
 ]
+
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # corsheaders对应的中间件，优先级尽可能的高，也就是放在最前面
@@ -145,6 +150,10 @@ USE_L10N = True
 
 USE_TZ = False # 默认是True,时间是utc时间,由于我们要用本地时间,所有false
 
+# 配置自定义的登陆认证函数
+AUTHENTICATION_BACKENDS = (
+    'users.views.CustomBackend',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
@@ -191,14 +200,20 @@ drf 全局配置:REST_FRAMEWORK配置，比如分页等。
 """
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 这个是http验证，用jwt好像没什么用了。。。我把它注释了，也还是能获取数据。。。
         'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
 )
 }
 
-import datetime
 
-# jwt-token的过期时间设置
-JWT_AUTH = {'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+# JWT_AUTH ：声明JWT_AUTH相关全局配置
+# jwt-token的过期时间设置,days=7表示获取一次jwt token可以用7天
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    # 自定义header = {'Authenticate':'JWT jwt-token'}中的这个JWT参数，这里我没改
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
             }
+
+

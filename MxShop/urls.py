@@ -57,8 +57,8 @@ urlpatterns = [
     # auth_token路由配置
     url(r'^api-token-auth/', views.obtain_auth_token),
 
-    # jwt的认证接口
-    url(r'^jwt-auth/', obtain_jwt_token),
+    # jwt的认证接口,返回jwt token
+    url(r'^login/', obtain_jwt_token),
 
     # drf 路由，views.py中的方式一 、二、三都可以用这个路由
     # url(r'goods/$', GoodstListView.as_view(), name='goods-list'),
