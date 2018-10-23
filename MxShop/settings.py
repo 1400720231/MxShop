@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters', # django 的搜索模块依赖
     'corsheaders',  # 从服务器段解决前后端分离访问的时候的跨域的问题
+    'rest_framework.authtoken', # 会新建一张表
 ]
 
 MIDDLEWARE = [
@@ -177,9 +178,27 @@ drf 全局配置:REST_FRAMEWORK配置，比如分页等。
 """
 
 # REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-#     'PAGE_SIZE': 10 # 每个10个，注意如果你的数据不多，只够一页数据的话，browser页面是没有分页栏显示的
+#     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+#     # 'PAGE_SIZE': 10 # 每个10个，注意如果你的数据不多，只够一页数据的话，browser页面是没有分页栏显示的
+#
 #
 # }
 
+"""
+这样配置之后就是全局的了。比如某些公共的数据是不许要登陆，如果用这个全局  'rest_framework.authentication.TokenAuthentication',去设置就不太好，所以要参考分页一样
+再view中定义authentication_class = ('Authentication', 'SessionAuthentication')
+}
+"""
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+)
+}
 
+import datetime
+
+# jwt-token的过期时间设置
+JWT_AUTH = {'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+            }

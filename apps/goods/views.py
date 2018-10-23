@@ -1,14 +1,18 @@
 from django.shortcuts import render
 
 # Create your views here.
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
 from .models import Goods, GoodsCategory
-from goods.serializer import GoodsSerializer,CategorySerializer
+from goods.serializer import GoodsSerializer, CategorySerializer
 from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework import  generics
+from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import viewsets
 # drf 过滤
@@ -49,7 +53,6 @@ class GoodstListView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 """
-
 
 """
 方式二：mixins.ListModelMixin + GenericAPIView
@@ -137,13 +140,14 @@ router.register(r'goods', GoodstListView) # 注册goods路由,会自动实现上
 
 """
 
+
 # 自定义分页class
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10 # 每页默认数据个数
+    page_size = 10  # 每页默认数据个数
     page_size_query_param = "page_size"  # 自定义获取每页数据数量的参数，最大不会超过max_page_size=100
-    page_query_param = "page" # 第几页
+    page_query_param = "page"  # 第几页
     max_page_size = 100  # 每页最大回去个数
 
 
@@ -157,7 +161,6 @@ class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         return Goods.objects.filter(shop_price__gt=100)
 """
-
 
 # 过滤方式二：drf filter
 """
@@ -239,20 +242,22 @@ class GoodstViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     SearchFilter  搜索功能
     OrderingFilter  排序功能
     """
-    queryset = Goods.objects.all() # get_queryse重载后这个就没有用了
-    serializer_class = GoodsSerializer # 序列化器
+    queryset = Goods.objects.all()  # get_queryse重载后这个就没有用了
+    serializer_class = GoodsSerializer  # 序列化器
     pagination_class = StandardResultsSetPagination  # 分页器
     # 这里的元组一定要加逗号！！！！不然后报错！！！
-    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter) # 过滤器，是django的过滤器，
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)  # 过滤器，是django的过滤器，
     filter_class = ProductFilter
     # SearchFilter指定搜索字段=name表示精确匹配，^goods_desc表示以搜索字段开头的内容（正则）
     search_fields = ('name', '^goods_desc', 'goods_brief')
     # OrderingFilter指定排序指端| 根据sold_num和add_time,shop_price排序
     # 也可以指定非时间或者数字字段排序，比如这里的name，但是好像从排序结果来看没有什么意义。。。
-    ordering_fields =('sold_num', 'add_time', 'shop_price', 'name')
+    ordering_fields = ('sold_num', 'add_time', 'shop_price', 'name')
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
 
 
-class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin,viewsets.GenericViewSet):
+class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     list:
         商品分类列表数据,类目数据很少就不用分页，只序列化就行了

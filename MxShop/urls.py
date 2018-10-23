@@ -25,6 +25,8 @@ from goods.view_base import  GoodList
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from goods.views import GoodstViewSet, CategoryViewset
+from rest_framework.authtoken import views
+from rest_framework_jwt.views import obtain_jwt_token
 
 router = DefaultRouter()
 # goods_list = GoodstListView.as_view({
@@ -52,11 +54,17 @@ urlpatterns = [
     # drf登陆路由|在drf的browser页面登陆有效
     url(r'^api-auth/', include('rest_framework.urls')),
 
+    # auth_token路由配置
+    url(r'^api-token-auth/', views.obtain_auth_token),
+
+    # jwt的认证接口
+    url(r'^jwt-auth/', obtain_jwt_token),
+
     # drf 路由，views.py中的方式一 、二、三都可以用这个路由
     # url(r'goods/$', GoodstListView.as_view(), name='goods-list'),
 
     # viewset方式对应的路由形式
     # url(r'goods/$', goods_list, name='goods-list'),
     # drf文档路由
-    url(r'docs/', include_docs_urls(title="慕学生鲜"))
+    url(r'docs/', include_docs_urls(title="小熊生鲜"))
 ]
