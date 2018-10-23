@@ -12,8 +12,11 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import sys
+import datetime
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # 表示最外面的那个MxShop文件夹的路径,注意是路径.,不是文件夹的名字.
+# from django.conf.global_settings import AUTHENTICATION_BACKENDS
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 把第三方路插入django项目文件环境路径,可直接import apps中的包 而不用from apps import ...
 # sys.path.insert(0, BASE_DIR)
@@ -51,10 +54,15 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'rest_framework',
-    'django_filters',
+    'django_filters', # django 的搜索模块依赖
+    'corsheaders',  # 从服务器段解决前后端分离访问的时候的跨域的问题
+    'rest_framework.authtoken', # 会新建一张表
 ]
 
+
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # corsheaders对应的中间件，优先级尽可能的高，也就是放在最前面
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -63,6 +71,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'MxShop.urls'
 
@@ -92,7 +102,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME':'mxshop',
-        'HOST':'localhost',
+        'HOST':'106.12.112.146',
         'USER':'root',
         'PASSWORD':'root',
         'PORT':'3306',
@@ -140,6 +150,10 @@ USE_L10N = True
 
 USE_TZ = False # 默认是True,时间是utc时间,由于我们要用本地时间,所有false
 
+# 配置自定义的登陆认证函数
+AUTHENTICATION_BACKENDS = (
+    'users.views.CustomBackend',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
@@ -157,6 +171,13 @@ MEDIA_ROOT只能设置一个，不然她不知道到底存放再哪里，和stat
 但是MEDIA_ROOT是为了保存上传文件的地方，你要是设置多个，他不晓得存在什么地方。可以，没毛病！
 """
 
+# corsheaders对应的配置，表示对所有的ip都支持跨域|https://github.com/ottoyiu/django-cors-headers
+#跨域增加忽略
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+
+
 
 
 """
@@ -166,7 +187,35 @@ drf 全局配置:REST_FRAMEWORK配置，比如分页等。
 """
 
 # REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-#     'PAGE_SIZE': 10 # 每个10个，注意如果你的数据不多，只够一页数据的话，browser页面是没有分页栏显示的
+#     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+#     # 'PAGE_SIZE': 10 # 每个10个，注意如果你的数据不多，只够一页数据的话，browser页面是没有分页栏显示的
+#
 #
 # }
+
+"""
+这样配置之后就是全局的了。比如某些公共的数据是不许要登陆，如果用这个全局  'rest_framework.authentication.TokenAuthentication',去设置就不太好，所以要参考分页一样
+再view中定义authentication_class = ('Authentication', 'SessionAuthentication')
+}
+"""
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 这个是http验证，用jwt好像没什么用了。。。我把它注释了，也还是能获取数据。。。
+        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+)
+}
+
+
+# JWT_AUTH ：声明JWT_AUTH相关全局配置
+# jwt-token的过期时间设置,days=7表示获取一次jwt token可以用7天
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    # 自定义header = {'Authenticate':'JWT jwt-token'}中的这个JWT参数，这里我没改
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',
+            }
+
+
+# 手机号码正则表达式
+REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"

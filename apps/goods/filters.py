@@ -1,6 +1,7 @@
 import django_filters
 
 from .models import Goods
+from django.db.models import Q
 
 
 class ProductFilter(django_filters.rest_framework.FilterSet):
@@ -14,13 +15,21 @@ class ProductFilter(django_filters.rest_framework.FilterSet):
     这个过滤器表示：
         筛选出大于等于 price_min小于等于price_max的Goods
         对外键category的属性的name模糊筛选， 其中icontains表示不区分大小写，contains表示区分大小写
+        category_name = django_filters.CharFilter(field_name='category__name', lookup_expr='icontains')
         对Goods model自身的name模糊筛选，其中icontains表示不区分大小写，contains表示区分大小写
+        name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
+    label='最大价格' 表示站点搜索框的抬头字段，不指定该参数的话，抬头显示字段为Goods models中的verbose_name值
     """
-    price_min = django_filters.NumberFilter(field_name='shop_price', lookup_expr='gte')
-    price_max = django_filters.NumberFilter(field_name='shop_price', lookup_expr='lte')
-    category_name = django_filters.CharFilter(field_name='category__name', lookup_expr='icontains')
-    name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
+    pricemin = django_filters.NumberFilter(field_name='shop_price', lookup_expr='gte')
+    pricemax = django_filters.NumberFilter(field_name='shop_price', lookup_expr='lte',  label='最大价格')
+    top_category = django_filters.NumberFilter(method='top_category_filter', label='自定义搜索框')
+
+    # 自定义一个搜索方法，传参给method，表示top_category输入的字段用改方法筛选过滤
+    def top_category_filter(self, queryset, name, value):
+        queryset = queryset.filter(Q(category_id=value)|Q(category__parents_category_id=value)\
+                                   |Q(category__parents_category__parents_category_id=value))
+        return queryset
 
     class Meta:
         model = Goods
-        fields = ['price_min', 'price_max', 'name', 'category_name']
+        fields = ['pricemin', 'pricemax']

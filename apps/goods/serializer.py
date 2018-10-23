@@ -36,14 +36,45 @@ class GoodsSerializer(serializers.ModelSerializer):
 """
 方式三： 把外键字段单独拿出来序列化，然后在上一级的序列化中嵌套使用就行
 """
-# 1 在Goods中category是一个外键，所以我们先序列化category对应的model Category
+
+class CategorySerializer3(serializers.ModelSerializer):
+    class Meta:
+        model = GoodsCategory
+        fields = "__all__"
+
+
+class CategorySerializer2(serializers.ModelSerializer):
+    sub_cat = CategorySerializer3(many=True)
+    class Meta:
+        model = GoodsCategory
+        fields = "__all__"
+
+"""
+这是一个一级序列化器，根据 一对多的概念把所有指向当前实例的其他实例序列化处出来。
+相当于django中的反向获取所有对象这样:
+class modelA(model.Model):
+    name = model.CharField()
+    
+class modelB(model.Model):
+    student = models.ForeignKey(name, relate_name= 'sub_cat')
+
+a = modelA()
+a.sub_cat.all()
+
+"""
+
 class CategorySerializer(serializers.ModelSerializer):
+    sub_cat = CategorySerializer2(many=True)
     class Meta:
         model = GoodsCategory
         # 可以指定需要序列化的字段
         # fields = ('name',)
         # 或者直接"__all__"序列化所有字段
         fields = '__all__'
+
+
+
+# 1 在Goods中category是一个外键，所以我们先序列化category对应的model Category
 # 2 在父级serializer中单独指明外键字段的序列化对象
 class GoodsSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
@@ -53,3 +84,6 @@ class GoodsSerializer(serializers.ModelSerializer):
         # fields = ('name','click_num')
         # 或者直接"__all__"序列化所有字段
         fields = '__all__'
+
+
+
