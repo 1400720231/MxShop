@@ -228,8 +228,11 @@ class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
     search_fields =('=name','^goods_desc', 'goods_brief')
     # =name表示对name字段精确匹配| ^goods_desc表示对goods_desc以搜索内容开头进行搜索| goods_brief就是模糊搜索
 """
+
 from .filters import ProductFilter
-from rest_framework.filters import SearchFilter,OrderingFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
+
+
 class GoodstViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     """
     DjangoFilterBackend  过滤功能
@@ -242,8 +245,8 @@ class GoodstViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     # 这里的元组一定要加逗号！！！！不然后报错！！！
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter) # 过滤器，是django的过滤器，
     filter_class = ProductFilter
-    # SearchFilter指定搜索字段
-    search_fields = ('=name', '^goods_desc', 'goods_brief')
+    # SearchFilter指定搜索字段=name表示精确匹配，^goods_desc表示以搜索字段开头的内容（正则）
+    search_fields = ('name', '^goods_desc', 'goods_brief')
     # OrderingFilter指定排序指端| 根据sold_num和add_time,shop_price排序
     # 也可以指定非时间或者数字字段排序，比如这里的name，但是好像从排序结果来看没有什么意义。。。
     ordering_fields =('sold_num', 'add_time', 'shop_price', 'name')

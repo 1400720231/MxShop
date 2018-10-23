@@ -34,6 +34,7 @@ router = DefaultRouter()
 
 router.register(r'goods', GoodstViewSet)
 router.register(r'categorys', CategoryViewset)
+
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
     url(r'^ueditor/', include('DjangoUeditor.urls')),
