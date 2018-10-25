@@ -24,7 +24,7 @@ class CustomBackend(ModelBackend):
     """
     def authenticate(self, username=None, password=None, **kwargs):
         try:
-            user=User.object.get(Q(username=username)|Q(mobile=username))
+            user = User.object.get(Q(username=username)|Q(mobile=username))
             if user.check_pasasword(password):
                 return user
         except Exception as e:
