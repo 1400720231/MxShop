@@ -17,8 +17,7 @@ class SmsSerializer(serializers.Serializer):
 
     def validate_mobile(self, mobile):
         """
-        验证手机号码
-
+        验证手机号码，验证成功后必须把mobile return回去，不然数据库不会保存mobile
         :param mobile:
         :return:
         """
@@ -36,3 +35,35 @@ class SmsSerializer(serializers.Serializer):
             raise serializers.ValidationError("发送时间频率过快，请再一分钟以后再试。")
 
         return mobile
+
+
+class UserSerializer(serializers.Serializer):
+    code = serializers.CharField(required=True, max_length=4, min_length=4, label="短信验证码")
+
+    def validate_code(self, code):
+        """
+        知识点：
+            1、 self.initial_data
+                前端post过来的数据在self.initial_data中
+
+            2、self.context['view'].request.query_parmas
+                url后面问号带的参数在
+
+
+        """
+        verify_codes = VerifyCode.objects.filter(mobile=self.initial_data["username"]).order_by("-add_time")
+        if verify_codes:
+            last_recods = verify_codes[0]
+            five_minites_ago = datetime.datetime.now() - timedelta(minutes=5)
+            if five_minites_ago > last_recods.add_time:
+                raise serializers.ValidationError("验证码过期")
+
+            if last_recods.code != code:
+                raise serializers.ValidationError("验证码错误")
+            # return code 如果这个code字段是需要保存在数据库中的字段的话，就必须return code回去
+        else:
+            raise serializers.ValidationError("验证码错误")
+
+    class Meta:
+        model = User
+        fileds = ("username", "code", "mobile")

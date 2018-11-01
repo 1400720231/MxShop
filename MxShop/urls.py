@@ -38,6 +38,7 @@ router = DefaultRouter()
 router.register(r'goods', GoodstViewSet, base_name='goods')
 router.register(r'categorys', CategoryViewset, base_name='categorys')
 router.register(r'codes', SmsCodeViewset, base_name='codes')
+
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
     url(r'^ueditor/', include('DjangoUeditor.urls')),
@@ -56,9 +57,10 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls')),
 
     # auth_token路由配置
-    url(r'^api-token-auth/', views.obtain_auth_token),
+    # url(r'^api-token-auth/', views.obtain_auth_token),
 
-    # jwt的认证接口,返回jwt token
+
+    # jwt的认证接口,返回jwt token值
     url(r'^login/', obtain_jwt_token),
 
     # drf 路由，views.py中的方式一 、二、三都可以用这个路由
@@ -67,5 +69,5 @@ urlpatterns = [
     # viewset方式对应的路由形式
     # url(r'goods/$', goods_list, name='goods-list'),
     # drf文档路由
-    url(r'docs/', include_docs_urls(title="小熊生鲜"))
+    url(r'docs/', include_docs_urls(title="小熊drf文档界面"))
 ]

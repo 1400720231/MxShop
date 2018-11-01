@@ -11,6 +11,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import VerifyCode
 from random import choice
+
+
 User =get_user_model()
 
 
@@ -54,7 +56,7 @@ class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
         # 如果能走到这里说明都验证通过了
         mobile = serializer.validated_data['mobile']
 
-        # 下面似乎短信验证码的发送逻辑,因为没有短信机制，我就对边写个函数
+        # 下面似乎短信验证码的发送逻辑,因为没有短信机制，我就随便写个函数
         code_status = self.send()
         # 如果发送成功
         if code_status:
@@ -63,7 +65,6 @@ class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
             return Response({'mobile': mobile}, status=status.HTTP_201_CREATED)
         else:
             return Response({'msg': '验证码发送失败，请稍后再试'}, status.HTTP_400_BAD_REQUEST)
-
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

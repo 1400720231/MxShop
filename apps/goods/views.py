@@ -145,7 +145,7 @@ router.register(r'goods', GoodstListView) # 注册goods路由,会自动实现上
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10  # 每页默认数据个数
+    page_size = 12  # 每页默认数据个数
     page_size_query_param = "page_size"  # 自定义获取每页数据数量的参数，最大不会超过max_page_size=100
     page_query_param = "page"  # 第几页
     max_page_size = 100  # 每页最大回去个数

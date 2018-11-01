@@ -46,6 +46,7 @@ class CategorySerializer3(serializers.ModelSerializer):
 
 class CategorySerializer2(serializers.ModelSerializer):
     sub_cat = CategorySerializer3(many=True)
+
     class Meta:
         model = GoodsCategory
         fields = "__all__"

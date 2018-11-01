@@ -54,11 +54,10 @@ INSTALLED_APPS = [
     'xadmin',
     'crispy_forms',
     'rest_framework',
-    'django_filters', # django 的搜索模块依赖
+    'django_filters',  # django 的搜索模块依赖
     'corsheaders',  # 从服务器段解决前后端分离访问的时候的跨域的问题
-    'rest_framework.authtoken', # 会新建一张表
+    # 'rest_framework.authtoken', # 会新建一张表
 ]
-
 
 
 MIDDLEWARE = [
@@ -101,12 +100,12 @@ WSGI_APPLICATION = 'MxShop.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'mxshop',
-        'HOST':'106.12.112.146',
-        'USER':'root',
-        'PASSWORD':'root',
-        'PORT':'3306',
-        'OPTIONS':{'init_command':'SET default_storage_engine=INNODB;'}
+        'NAME': 'mxshop',
+        'HOST': '106.12.112.146',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'PORT': '3306',
+        'OPTIONS': {'init_command': 'SET default_storage_engine=INNODB;'}
     }
 }
 """
@@ -172,8 +171,8 @@ MEDIA_ROOT只能设置一个，不然她不知道到底存放再哪里，和stat
 """
 
 # corsheaders对应的配置，表示对所有的ip都支持跨域|https://github.com/ottoyiu/django-cors-headers
-#跨域增加忽略
 
+# 跨域增加忽略
 CORS_ORIGIN_ALLOW_ALL = True
 
 
@@ -194,8 +193,10 @@ drf 全局配置:REST_FRAMEWORK配置，比如分页等。
 # }
 
 """
-这样配置之后就是全局的了。比如某些公共的数据是不许要登陆，如果用这个全局  'rest_framework.authentication.TokenAuthentication',去设置就不太好，所以要参考分页一样
-再view中定义authentication_class = ('Authentication', 'SessionAuthentication')
+这样配置之后就是全局的了。比如某些公共的数据是不许要登陆，
+如果用这个全局 'rest_framework.authentication.TokenAuthentication',
+去设置就不太好，所以要参考分页一样在view中定义
+authentication_class = ('Authentication', 'SessionAuthentication')
 }
 """
 REST_FRAMEWORK = {
