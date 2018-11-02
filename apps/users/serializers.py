@@ -6,7 +6,7 @@ from MxShop.settings import REGEX_MOBILE
 from django.contrib.auth import get_user_model
 from .models import VerifyCode
 from rest_framework import serializers
-
+from rest_framework.validators import UniqueValidator
 
 User = get_user_model()
 
@@ -37,8 +37,9 @@ class SmsSerializer(serializers.Serializer):
         return mobile
 
 
-class UserSerializer(serializers.Serializer):
-    code = serializers.CharField(required=True, max_length=4, min_length=4, label="短信验证码")
+class UserRegSerializer(serializers.Serializer):
+    code = serializers.CharField(required=True, max_length=4, min_length=4, label="label短信验证码", help_text="help_text短信验证码")
+
 
     def validate_code(self, code):
         """
@@ -47,7 +48,7 @@ class UserSerializer(serializers.Serializer):
                 前端post过来的数据在self.initial_data中
 
             2、self.context['view'].request.query_parmas
-                url后面问号带的参数在
+                url后面问号带的参数在其中：www.baidu.com/?a=xx&b=xxx
 
 
         """
@@ -64,6 +65,12 @@ class UserSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError("验证码错误")
 
+    # 所有的serializer字段都在attrs其中
+    def validate(self, attrs):
+        attrs["mobile"] = attrs["username"]
+        del attrs["code"]
+        return attrs
+
     class Meta:
         model = User
-        fileds = ("username", "code", "mobile")
+        fields = ("mobile", "username", "email")

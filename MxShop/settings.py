@@ -149,7 +149,8 @@ USE_L10N = True
 
 USE_TZ = False # 默认是True,时间是utc时间,由于我们要用本地时间,所有false
 
-# 配置自定义的登陆认证函数
+
+# # 配置自定义的登陆认证函数
 AUTHENTICATION_BACKENDS = (
     'users.views.CustomBackend',
 )
@@ -203,7 +204,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 这个是http验证，用jwt好像没什么用了。。。我把它注释了，也还是能获取数据。。。
         'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
 )
 }

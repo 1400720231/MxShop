@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q
 from rest_framework.mixins import CreateModelMixin
 from rest_framework import viewsets
-from .serializers import SmsSerializer
+from .serializers import SmsSerializer, UserRegSerializer
 from rest_framework.response import Response
 from rest_framework import status
 from .models import VerifyCode
@@ -14,7 +14,6 @@ from random import choice
 
 
 User =get_user_model()
-
 
 class CustomBackend(ModelBackend):
     """
@@ -26,12 +25,24 @@ class CustomBackend(ModelBackend):
     """
     def authenticate(self, username=None, password=None, **kwargs):
         try:
-            user = User.object.get(Q(username=username)|Q(mobile=username))
-            if user.check_pasasword(password):
+            user = User.objects.get(Q(username=username)|Q(mobile=username))
+            if user.check_password(password):
                 return user
         except Exception as e:
             return None
+"""
+class CustomBackend(ModelBackend):
+   
+    
+    def authenticate(self, username=None, password=None, **kwargs):
+        try:
+            user = User.objects.get(Q(username=username)|Q(mobile=username))
+            if user.check_password(password):
+                return user
+        except Exception as e:
 
+            return None
+"""
 
 class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
     """
@@ -43,7 +54,7 @@ class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
     def send(self):
         seeds = '1234567890'
         random_str = []
-        for i in range(0,4):
+        for i in range(0, 4):
             random_str.append(choice(seeds))
         return ''.join(random_str)
 
@@ -70,3 +81,9 @@ class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
+class UserViewset(CreateModelMixin, viewsets.GenericViewSet):
+    """
+
+
+    """
+    serializer_class = UserRegSerializer
