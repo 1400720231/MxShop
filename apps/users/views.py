@@ -44,6 +44,7 @@ class CustomBackend(ModelBackend):
             return None
 """
 
+
 class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
     """
     发送短信验证码
@@ -64,7 +65,7 @@ class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         # 验证失败就报错
         serializer.is_valid(raise_exception=True)
-        # 如果能走到这里说明都验证通过了
+        # 如果能走到这里说明都验证通过了|validated_data包含了验证过的字段信息
         mobile = serializer.validated_data['mobile']
 
         # 下面似乎短信验证码的发送逻辑,因为没有短信机制，我就随便写个函数
@@ -75,7 +76,7 @@ class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
             verify_code.save()
             return Response({'mobile': mobile}, status=status.HTTP_201_CREATED)
         else:
-            return Response({'msg': '验证码发送失败，请稍后再试'}, status.HTTP_400_BAD_REQUEST)
+            return Response({'msg': '验证码发送失败，请稍后再试'}, status=status.HTTP_400_BAD_REQUEST)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
