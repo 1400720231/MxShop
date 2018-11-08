@@ -1,4 +1,5 @@
 import django_filters
+from django.contrib.admin.utils import help_text_for_field
 
 from .models import Goods
 from django.db.models import Q
@@ -20,7 +21,7 @@ class ProductFilter(django_filters.rest_framework.FilterSet):
         name = django_filters.CharFilter(field_name='name', lookup_expr='icontains')
     label='最大价格' 表示站点搜索框的抬头字段，不指定该参数的话，抬头显示字段为Goods models中的verbose_name值
     """
-    pricemin = django_filters.NumberFilter(field_name='shop_price', lookup_expr='gte')
+    pricemin = django_filters.NumberFilter(field_name='shop_price', lookup_expr='gte', help_text="最小值")
     pricemax = django_filters.NumberFilter(field_name='shop_price', lookup_expr='lte',  label='最大价格')
     top_category = django_filters.NumberFilter(method='top_category_filter', label='自定义搜索框')
     is_hot = django_filters.BooleanFilter(field_name='is_hot', label="是否热销")

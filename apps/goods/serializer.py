@@ -66,7 +66,7 @@ a.sub_cat.all()
 """
 
 
-class CategorySerializer(serializers.ModelSerializer):
+class  CategorySerializer(serializers.ModelSerializer):
     sub_cat = CategorySerializer2(many=True)
 
     class Meta:

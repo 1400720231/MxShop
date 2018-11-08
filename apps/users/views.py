@@ -4,10 +4,14 @@ from django.shortcuts import render
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth import get_user_model
 from django.db.models import Q
-from rest_framework.mixins import CreateModelMixin
+from rest_framework import mixins
 from rest_framework import viewsets
-from .serializers import SmsSerializer, UserRegSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from .serializers import SmsSerializer, UserRegSerializer, UserDetailSerializer
 from rest_framework.response import Response
+from rest_framework_jwt.serializers import jwt_encode_handler, jwt_payload_handler
 from rest_framework import status
 from .models import VerifyCode
 from random import choice
@@ -45,7 +49,7 @@ class CustomBackend(ModelBackend):
 """
 
 
-class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
+class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
     """
     发送短信验证码
     """
@@ -82,9 +86,46 @@ class SmsCodeViewset(CreateModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class UserViewset(CreateModelMixin, viewsets.GenericViewSet):
+class UserViewset(mixins.CreateModelMixin, mixins.RetrieveModelMixin ,viewsets.GenericViewSet):
     """
 
 
     """
+    queryset = User.objects.all()
     serializer_class = UserRegSerializer
+    authentication_classes = (SessionAuthentication, JSONWebTokenAuthentication)
+
+    # 动态序列化 注册和获取为两个序列化
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return UserDetailSerializer
+        elif self.action == "create":
+            return UserRegSerializer
+
+        return UserDetailSerializer
+
+    # 动态权限 注册不需要权限，获取详情需要
+    def get_permissions(self):
+        if self.action == "retrieve":
+            return [IsAuthenticated()]
+        elif self.action == "create":
+            return []
+
+        return []
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # 注册成功后，去拿jwt_token序列化回去
+        user = self.perform_create(serializer)
+        re_dict = serializer.data
+        payload = jwt_payload_handler(user)
+        # 拿token
+        re_dict["token"] = jwt_encode_handler(payload)
+        # 返回用户名
+        re_dict["name"] = user.name if user.name else user.username
+
+        headers = self.get_success_headers(serializer.data)
+        # 序列化回去
+        return Response(re_dict, status=status.HTTP_201_CREATED, headers=headers)
