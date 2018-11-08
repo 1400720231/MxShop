@@ -236,9 +236,11 @@ from .filters import ProductFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 
-class GoodstViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class GoodstViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     DjangoFilterBackend  过滤功能
+    ProductFilter 自定义过滤功能
+
     SearchFilter  搜索功能
     OrderingFilter  排序功能
     """
@@ -248,6 +250,9 @@ class GoodstViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     # 这里的元组一定要加逗号！！！！不然后报错！！！
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)  # 过滤器，是django的过滤器，
     filter_class = ProductFilter
+    # DjangoFilterBackend对应的搜索字段声明，但是因为有了自定义的ProductFilter，filter_fields是无效的
+    # 以ProductFilter中的fields字段为准
+    # filter_fields = ("is_hot",)
     # SearchFilter指定搜索字段=name表示精确匹配，^goods_desc表示以搜索字段开头的内容（正则）
     search_fields = ('name', '^goods_desc', 'goods_brief')
     # OrderingFilter指定排序指端| 根据sold_num和add_time,shop_price排序

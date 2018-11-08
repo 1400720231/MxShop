@@ -3,6 +3,7 @@ from datetime import datetime
 
 # 三方库	
 from django.db import models
+
 # from django.contrib import get_user_model
 
 # 自定义库
@@ -23,6 +24,7 @@ class UserFav(models.Model):
 	class Meta:
 		verbose_name='用户收藏'
 		verbose_name_plural = verbose_name
+
 
 	def __str__(self):
 		return self.user.name 

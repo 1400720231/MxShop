@@ -23,6 +23,7 @@ class ProductFilter(django_filters.rest_framework.FilterSet):
     pricemin = django_filters.NumberFilter(field_name='shop_price', lookup_expr='gte')
     pricemax = django_filters.NumberFilter(field_name='shop_price', lookup_expr='lte',  label='最大价格')
     top_category = django_filters.NumberFilter(method='top_category_filter', label='自定义搜索框')
+    is_hot = django_filters.BooleanFilter(field_name='is_hot', label="是否热销")
 
     # 自定义一个搜索方法，传参给method，表示top_category输入的字段用改方法筛选过滤
     def top_category_filter(self, queryset, name, value):
@@ -32,4 +33,4 @@ class ProductFilter(django_filters.rest_framework.FilterSet):
 
     class Meta:
         model = Goods
-        fields = ['pricemin', 'pricemax']
+        fields = ['pricemin', 'pricemax', 'is_hot']

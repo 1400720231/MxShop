@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from goods.models import Goods, GoodsCategory
+from goods.models import Goods, GoodsCategory, GoodsImages
 
 """
 drf方式一：serializers.Serializer，类似django的form定义，字段一定要和model中的字段名字一样，类型一样
@@ -77,10 +77,17 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class GoodsImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GoodsImages
+        fields = ("image",)
+
+
 # 1 在Goods中category是一个外键，所以我们先序列化category对应的model Category
 # 2 在父级serializer中单独指明外键字段的序列化对象
 class GoodsSerializer(serializers.ModelSerializer):
     category = CategorySerializer()
+    images = GoodsImageSerializer(many=True)
 
     class Meta:
         model = Goods

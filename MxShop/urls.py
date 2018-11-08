@@ -26,6 +26,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from goods.views import GoodstViewSet, CategoryViewset
 from users.views import SmsCodeViewset,UserViewset
+from user_operation.views import UserFavViewset
 from rest_framework.authtoken import views
 from rest_framework_jwt.views import obtain_jwt_token
 
@@ -35,10 +36,16 @@ router = DefaultRouter()
 #
 # })
 # base_name 路由名称的前缀
+# 商品
 router.register(r'goods', GoodstViewSet, base_name='goods')
+# 商品第一大类类别
 router.register(r'categorys', CategoryViewset, base_name='categorys')
+# 发送短信验证码
 router.register(r'codes', SmsCodeViewset, base_name='codes')
+# 用户注册
 router.register(r'users', UserViewset, base_name='users')
+# 用户收藏
+router.register(r'userfavs', UserFavViewset, base_name='userfavs')
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
