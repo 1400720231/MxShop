@@ -86,7 +86,10 @@ class SmsCodeViewset(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class UserViewset(mixins.CreateModelMixin, mixins.RetrieveModelMixin ,viewsets.GenericViewSet):
+class UserViewset(mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin ,
+                  mixins.UpdateModelMixin,
+                  viewsets.GenericViewSet):
     """
 
 
