@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserFav
+from .models import UserFav, UserLeavingMessage
 from rest_framework.validators import UniqueTogetherValidator
 from goods.serializer import GoodsSerializer
 
@@ -35,3 +35,16 @@ class UserFavSerializer(serializers.ModelSerializer):
             )
         ]
         fields = ("user", "goods", "id")
+
+
+class LeavingMessageSerializer(serializers.ModelSerializer):
+    # 获取当前登陆的用户
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    # 只返回不post
+    add_time = serializers.DateTimeField(read_only=True,format="%Y-%m-%d %H:%M")
+
+    class Meta:
+        model = UserLeavingMessage
+        fields = ("add_time","user", "message_type", "subject", "message","file","id")

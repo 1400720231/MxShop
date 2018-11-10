@@ -25,7 +25,6 @@ class UserFav(models.Model):
 		verbose_name='用户收藏'
 		verbose_name_plural = verbose_name
 
-
 	def __str__(self):
 		return self.user.name 
 
@@ -51,7 +50,6 @@ class UserLeavingMessage(models.Model):
 	file = models.FileField(verbose_name='上传的文件',help_text='上传的文件')
 	add_time = models.DateTimeField(default=datetime.now,verbose_name='添加时间')
 
-
 	class Meta:
 		verbose_name='用户留言'
 		verbose_name_plural= verbose_name
@@ -62,7 +60,7 @@ class UserLeavingMessage(models.Model):
 
 class UserAddress(models.Model):
 	"""
-    用户收货地址
+    	用户收货地址
 	"""
 	user = models.ForeignKey(UserProfile,verbose_name='用户')
 	district = models.CharField(max_length=100,default='',verbose_name='区域')

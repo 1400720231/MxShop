@@ -26,7 +26,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from goods.views import GoodstViewSet, CategoryViewset
 from users.views import SmsCodeViewset,UserViewset
-from user_operation.views import UserFavViewset
+from user_operation.views import UserFavViewset,LeavingMessageViewset
 from rest_framework.authtoken import views
 from rest_framework_jwt.views import obtain_jwt_token
 
@@ -46,6 +46,8 @@ router.register(r'codes', SmsCodeViewset, base_name='codes')
 router.register(r'users', UserViewset, base_name='users')
 # 用户收藏
 router.register(r'userfavs', UserFavViewset, base_name='userfavs')
+# 用户留言
+router.register(r'messages', LeavingMessageViewset, base_name='messages')
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
