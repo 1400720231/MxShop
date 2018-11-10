@@ -48,13 +48,13 @@ class OrderInfo(models.Model):
 	ORDER_STATUS = (
 		("success","成功"), 
 		("cancel","取消"), 
-		("cancel","待支付"), 
+		("paying","待支付"),
 	)
 	user = models.ForeignKey(UserProfile,  verbose_name='用户')
 	order_sn =models.CharField(max_length=30, unique=True, verbose_name='订单号')
 	# 支付宝返回的订单号
 	trade_no = models.CharField(max_length=100, unique=True, null=True, blank=True, verbose_name='支付宝订单号')
-	pay_status = models.CharField(choices=ORDER_STATUS, max_length=10, verbose_name='订单状态')
+	pay_status = models.CharField(choices=ORDER_STATUS,default="paying", max_length=10, verbose_name='订单状态')
 	post_script = models.CharField(max_length=200, verbose_name='订单留言')
 	order_mount = models.FloatField(default=0.0, verbose_name='订单金额')
 	pay_time = models.DateTimeField(default=datetime.now, verbose_name='添加时间')

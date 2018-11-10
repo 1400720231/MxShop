@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserFav, UserLeavingMessage
+from .models import UserFav, UserLeavingMessage,UserAddress
 from rest_framework.validators import UniqueTogetherValidator
 from goods.serializer import GoodsSerializer
 
@@ -48,3 +48,43 @@ class LeavingMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserLeavingMessage
         fields = ("add_time","user", "message_type", "subject", "message","file","id")
+
+
+class AddressSerializer(serializers.ModelSerializer):
+    # 获取当前登陆的用户
+    user = serializers.HiddenField(
+        default=serializers.CurrentUserDefault()
+    )
+    signer_name = serializers.CharField(required=True, max_length=10, min_length=2,
+                                        label="收货人", help_text="收货人",
+                                        error_messages={
+                                            "blank": "收货人不能为空", # 字段存在，内容为空
+                                            "required": "收货人不能为空", # 字段不存在，没有传过来
+                                            "max_length": "收货人姓名最大长度为10",
+                                            "min_length": "收货人姓名最小长度为2"
+                                     })
+    signer_mobile = serializers.CharField(required=True,
+                                          label="收货人电话", help_text="收货人电话",
+                                          error_messages={
+                                              "blank": "收货人电话不能为空",  # 字段存在，内容为空
+                                              "required": "收货人电话不能为空",  # 字段不存在，没有传过来
+                                              "max_length": "收货人姓名最大长度为10",
+                                              "min_length": "收货人姓名最小长度为2"
+
+                                        })
+
+    def validate_signer_mobile(self, signer_mobile):
+        from MxShop.settings import REGEX_MOBILE
+        import re
+        if not re.match(REGEX_MOBILE, str(signer_mobile)):
+            raise serializers.ValidationError("手机号码不合法，请输入合法的手机号")
+        else:
+            # return signer_mobile 如果这个signer_mobile字段是需要保存在数据库中的字段的话，就必须returne回去
+            return signer_mobile
+
+    class Meta:
+        model = UserAddress
+        fields = ("user", "province", "city", "address", "signer_name", "signer_mobile", "id")
+
+
+

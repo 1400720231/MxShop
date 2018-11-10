@@ -5,8 +5,8 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from .models import Goods, GoodsCategory
-from goods.serializer import GoodsSerializer, CategorySerializer
+from .models import Goods, GoodsCategory,Banner
+from goods.serializer import BannerSerializer,GoodsSerializer, CategorySerializer
 from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 from rest_framework.views import APIView
@@ -270,3 +270,11 @@ class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     """
     queryset = GoodsCategory.objects.filter(category_type=1)
     serializer_class = CategorySerializer
+
+
+
+class BannerViewset(mixins.ListModelMixin,
+                    viewsets.GenericViewSet):
+
+    queryset = Banner.objects.all().order_by("index")
+    serializer_class = BannerSerializer

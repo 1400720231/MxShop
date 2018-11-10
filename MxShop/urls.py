@@ -24,9 +24,11 @@ from goods.view_base import  GoodList
 # 文档函数
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
-from goods.views import GoodstViewSet, CategoryViewset
+from trade.views import ShoppingCartViewset
+from goods.views import GoodstViewSet, CategoryViewset,BannerViewset
 from users.views import SmsCodeViewset,UserViewset
-from user_operation.views import UserFavViewset,LeavingMessageViewset
+from trade.views import OrderViewset
+from user_operation.views import UserFavViewset,LeavingMessageViewset,AddressViewset
 from rest_framework.authtoken import views
 from rest_framework_jwt.views import obtain_jwt_token
 
@@ -48,6 +50,16 @@ router.register(r'users', UserViewset, base_name='users')
 router.register(r'userfavs', UserFavViewset, base_name='userfavs')
 # 用户留言
 router.register(r'messages', LeavingMessageViewset, base_name='messages')
+# 收货地址
+router.register(r'address', AddressViewset, base_name='address')
+# 加入购物车OrderViewset
+router.register(r'shoppingcart', ShoppingCartViewset, base_name='shoppingcart')
+# 订单相关
+router.register(r'orders', OrderViewset, base_name='orders')
+# 轮播图
+router.register(r'banners', BannerViewset, base_name='banners')
+
+
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from goods.models import Goods, GoodsCategory, GoodsImages
+from .models import Goods, GoodsCategory, GoodsImages, Banner
 
 """
 drf方式一：serializers.Serializer，类似django的form定义，字段一定要和model中的字段名字一样，类型一样
@@ -99,3 +99,9 @@ class GoodsSerializer(serializers.ModelSerializer):
     # 获取url后面带的参数方法
     # def validated_data(self):
     #   self.context['view'].request.query_parmas
+
+
+class BannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = "__all__"

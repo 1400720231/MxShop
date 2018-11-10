@@ -5,8 +5,8 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from utils.permissions import IsOwnerOrReadOnly
 from rest_framework import viewsets
 from rest_framework import mixins
-from .serializers import UserFavSerializer, UserFavDetailSerializer,LeavingMessageSerializer
-from .models import UserFav,UserLeavingMessage
+from .serializers import AddressSerializer,UserFavSerializer, UserFavDetailSerializer,LeavingMessageSerializer
+from .models import UserFav,UserLeavingMessage,UserAddress
 # Create your views here.
 
 
@@ -73,4 +73,31 @@ class LeavingMessageViewset(mixins.ListModelMixin,
 
     def get_queryset(self):
         queryset = UserLeavingMessage.objects.filter(user=self.request.user)
+        return queryset
+
+
+class AddressViewset(mixins.CreateModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.DestroyModelMixin,
+                     mixins.ListModelMixin,
+                     viewsets.GenericViewSet):
+
+    """
+    上面的视图增删改查都用到了，其实drf已经内置做了这么一个东西：viewsets.ModelViewSet
+    收货地址管理
+    list:
+        获取收获自地址
+    create:
+        添加收货地址
+    update:
+        更新收获地址
+    destory:
+        删除收货地址
+    """
+    serializer_class = AddressSerializer
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
+    authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
+
+    def get_queryset(self):
+        queryset = UserAddress.objects.filter(user=self.request.user)
         return queryset
