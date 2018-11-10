@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from .models import Goods, GoodsCategory,Banner
-from goods.serializer import BannerSerializer,GoodsSerializer, CategorySerializer
+from goods.serializer import IndexCategorySerializer,BannerSerializer,GoodsSerializer, CategorySerializer
 from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 from rest_framework.views import APIView
@@ -261,6 +261,15 @@ class GoodstViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.G
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
 
+    # 点击的时候会获取详情，所以在这里做点击或者访问数量+1的操作
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.click_num += 1
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
+
 
 class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
@@ -278,3 +287,11 @@ class BannerViewset(mixins.ListModelMixin,
 
     queryset = Banner.objects.all().order_by("index")
     serializer_class = BannerSerializer
+
+
+
+class IndexCategoryViewset(mixins.ListModelMixin,viewsets.GenericViewSet):
+
+
+    queryset = GoodsCategory.objects.filter(is_tab=True)
+    serializer_class = IndexCategorySerializer

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Goods, GoodsCategory, GoodsImages, Banner
-
+from .models import Goods,GoodsCategoryBrand, GoodsCategory, GoodsImages, Banner
+from django.db.models import Q
 """
 drf方式一：serializers.Serializer，类似django的form定义，字段一定要和model中的字段名字一样，类型一样
 
@@ -104,4 +104,50 @@ class GoodsSerializer(serializers.ModelSerializer):
 class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
+        fields = "__all__"
+
+
+class BrandSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GoodsCategoryBrand
+        fields = "__all__"
+
+
+class IndexCategorySerializer(serializers.ModelSerializer):
+    """
+    1、
+        序列化的时候是序列化最上层的数据的，所以GoodsCategory只返回最上层的数据，
+     sub_cat = CategorySerializer2(many=True)表示返回两层数据
+
+    2、
+        def get_goods(self, obj):
+            all_goods = Goods.objects.filter(Q(category_id=obj.id)|\
+                                             Q(category__parents_category_id=obj.id)\
+                                             |Q(category__parents_category__parents_category_id=obj.id))
+            goods_serializer = GoodsSerializer(all_goods, many=True)
+            return goods_serializer.data
+
+            自定义一个专门返回函数，用来灵活序列化数据。在Goods中有一个字段外键指向GoodsCategory，
+        GoodsCategory中有一个字段parents_category，只有第三层数据才有category__parents_category__parents_category_id，
+        只有第二层的数据才有category__parents_category_id,当第一层的时候就直接category_id就行，所以
+        这个函数的意思就是返回在Goods中为第一类的数据
+    3、
+        class Meta:
+            model =GoodsCategory
+        这里的model=GoodsCategory,所以def get_goods(self, obj):中的obj为GoodsCategory的 实例，
+        def get_goods(self, obj):方法则是返回所有category对应的商品类是第一类的商品。
+    """
+    brands = BannerSerializer(many=True)
+    goods = serializers.SerializerMethodField()
+    sub_cat = CategorySerializer2(many=True)
+
+    def get_goods(self, obj):
+        all_goods = Goods.objects.filter(Q(category_id=obj.id)|Q(category__parents_category_id=obj.id)\
+                                   |Q(category__parents_category__parents_category_id=obj.id))
+
+        goods_serializer = GoodsSerializer(all_goods, many=True)
+        return goods_serializer.data
+
+    class Meta:
+        model =GoodsCategory
         fields = "__all__"

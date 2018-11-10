@@ -46,7 +46,7 @@ class GoodsCategoryBrand(models.Model):
 	default=datetime.now表示实例创建的时间，即数据存保存的时候
 	default=datetime.now()表示代码编译执行的时候时间
 	"""
-	category = models.ForeignKey(GoodsCategory, null=True, blank=True, verbose_name='商品类目')
+	category = models.ForeignKey(GoodsCategory, related_name="brands", null=True, blank=True, verbose_name='商品类目')
 	name = models.CharField(default='', max_length=30, verbose_name='品牌名', help_text='品牌名')
 	desc = models.TextField(default='', max_length=200, verbose_name='品牌描述', help_text='品牌描述')
 	image = models.ImageField(upload_to="brands/  ")
@@ -63,11 +63,11 @@ class GoodsCategoryBrand(models.Model):
 class Goods(models.Model):
 	"""
 	商品
-	UEditorField：
+		UEditorField：
 	"""
-	category = models.ForeignKey(GoodsCategory,verbose_name='商品类目')
+	category = models.ForeignKey(GoodsCategory, verbose_name='商品类目')
 	goods_sn = models.CharField(max_length=50,default='',verbose_name='商品唯一货号')
-	name = models.CharField(max_length=300,verbose_name='商品名')
+	name = models.CharField(max_length=300, verbose_name='商品名')
 	click_num = models.IntegerField(default=0,verbose_name='点击数')
 	sold_num = models.IntegerField(default=0,verbose_name='商品销售量')
 	fav_num = models.IntegerField(default=0,verbose_name='收藏数')

@@ -9,7 +9,6 @@ from .serializers import ShoppingCartSerializer,OrderSerializer
 from .models import ShoppingCart, OrderInfo, OrderGoods
 
 
-
 class ShoppingCartViewset(viewsets.ModelViewSet):
     """
     购物车功能
@@ -19,6 +18,31 @@ class ShoppingCartViewset(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     authentication_classes = (SessionAuthentication, JSONWebTokenAuthentication)
     lookup_field = "goods_id"
+
+    # 加入购物车时候商品数量-1
+    def perform_create(self, serializer):
+        shop_carts = serializer.save()
+        goods = shop_carts.goods
+        goods.goods_num -= shop_carts.nums
+        goods.save()
+
+    # 从购物车删除后，商品数量+1
+    def perform_destroy(self, instance):
+        goods = instance.goods
+        goods.goods_num += instance.nums
+        goods.save()
+        # 在实例删除前进行相关操作
+        instance.delete
+
+    # 更新操作对应解析新增或者删除
+    def perform_update(self, serializer):
+        existed_record = ShoppingCart.objects.get(id=serializer.instance.id)
+        existed_nums = existed_record.nums
+        saved_record = serializer.save()
+        nums = saved_record.nums - existed_nums
+        goods = saved_record.goods
+        goods.goods_num -= nums
+        goods.save()
 
     def get_queryset(self):
         return ShoppingCart.objects.filter(user=self.request.user)

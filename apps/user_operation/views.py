@@ -48,6 +48,14 @@ class UserFavViewset(mixins.CreateModelMixin,
     # 中的goods_id字段来表示,为了更方便
     lookup_field = "goods_id"
 
+    # save进数据库的时候会调用perform_create函数，serializer.save()就是保存数据库的，并返回保存的实例，
+    # 我们在这里进行其他的操作，比如这里每次收藏后收藏数fav_num+=1的操作，当然也可以用singal信号机制完成
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        goods = instance.goods
+        goods.fav_num += 1
+        goods.save()
+
     def get_queryset(self):
         queryset = UserFav.objects.filter(user=self.request.user)
         return queryset
@@ -101,3 +109,6 @@ class AddressViewset(mixins.CreateModelMixin,
     def get_queryset(self):
         queryset = UserAddress.objects.filter(user=self.request.user)
         return queryset
+
+
+

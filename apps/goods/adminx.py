@@ -1,7 +1,7 @@
 import xadmin
 
-from .models import GoodsCategory,GoodsCategoryBrand
-from .models import Goods,GoodsImages,Banner
+from .models import GoodsCategory, GoodsCategoryBrand
+from .models import Goods, GoodsImages, Banner
 
 
 """
@@ -14,10 +14,11 @@ class CourseAdmin(object):
 xadmin.site.register(BannerCourse, BannerCourseAdmin)
 """
 
+
 class GoodsCategoryAdmin(object):
-	list_display = ['name','desc','code','category_type','parents_category','is_tab','add_time']
-	search_fields = ['name','desc','code','category_type','parents_category','is_tab','add_time']
-	list_filter = ['name','desc','code','category_type','parents_category','is_tab','add_time']
+    list_display = ['name','desc','code','category_type','parents_category','is_tab','add_time']
+    search_fields = ['name','desc','code','category_type','parents_category','is_tab','add_time']
+    list_filter = ['name','desc','code','category_type','parents_category','is_tab','add_time']
 
 
 class GoodsCategoryBrandAdmin(object):
@@ -25,6 +26,12 @@ class GoodsCategoryBrandAdmin(object):
 	search_fields =['category','name','desc','image','add_time']
 	list_filter = ['category','name','desc','image','add_time']
 
+	# 只返回第一类数据，选的时候方便点
+	def get_context(self):
+		context = super(GoodsCategoryBrandAdmin, self).get_context()
+		if 'form' in context:
+			context['form'].fields['category'].queryset = GoodsCategory.objects.filter(category_type=1)
+		return context
 
 
 class GoodsAdmin(object):
