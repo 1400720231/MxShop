@@ -5,7 +5,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from utils.permissions import IsOwnerOrReadOnly
 from rest_framework import viewsets
 from rest_framework import mixins
-from .serializers import UserFavSerializer
+from .serializers import UserFavSerializer, UserFavDetailSerializer
 from .models import UserFav
 # Create your views here.
 
@@ -15,6 +15,10 @@ class UserFavViewset(mixins.CreateModelMixin,
                      mixins.ListModelMixin,
                      viewsets.GenericViewSet):
     """
+    list:
+        获取用户收餐列表
+    retrive:
+        某个收藏商品的详情
     用户收藏功能
 
     这个serializer_class要保存当前登陆的用户：
@@ -40,7 +44,19 @@ class UserFavViewset(mixins.CreateModelMixin,
     serializer_class =UserFavSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrReadOnly)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
+    # userfav/10/详情id默认肯定是数据库的自增id, lookup_field=goods_id表示用数据库
+    # 中的goods_id字段来表示,为了更方便
+    lookup_field = "goods_id"
 
     def get_queryset(self):
         queryset = UserFav.objects.filter(user=self.request.user)
-        return  queryset
+        return queryset
+
+    # 动态序列化 注册和获取为两个序列化
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return UserFavDetailSerializer
+        elif self.action == "create":
+            return UserFavSerializer
+
+        return UserFavDetailSerializer
