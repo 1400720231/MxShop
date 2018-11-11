@@ -213,7 +213,7 @@ REST_FRAMEWORK = {
 # JWT_AUTH ：声明JWT_AUTH相关全局配置
 # jwt-token的过期时间设置,days=7表示获取一次jwt token可以用7天
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=6),
     # 自定义header = {'Authenticate':'JWT jwt-token'}中的这个JWT参数，这里我没改
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
             }
