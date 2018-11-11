@@ -4,11 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/MxShop/urls.py" description="login" line="87" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8ad8f6af-cb04-42c8-be71-33b33c69fd85" name="默认的" comment="完成jwt-auth jwt-token验证配置">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MxShop/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/MxShop/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-    </list>
+    <list default="true" id="8ad8f6af-cb04-42c8-be71-33b33c69fd85" name="默认的" comment="完成jwt-auth jwt-token验证配置" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,7 +36,7 @@
     <session id="-1653219717">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="19" />
+          <entry key="project.closed" value="20" />
           <entry key="project.open.time.0" value="2" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.11" value="1" />
@@ -160,7 +156,9 @@
       </file>
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/requirements.txt">
-          <provider selected="true" editor-type-id="text-editor" />
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1398" />
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
@@ -310,8 +308,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="630" />
-    <option name="y" value="11" />
+    <option name="x" value="321" />
+    <option name="y" value="20" />
     <option name="width" value="1328" />
     <option name="height" value="1071" />
   </component>
@@ -598,10 +596,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="630" y="11" width="1328" height="1071" extended-state="0" />
-    <editor active="true" />
+    <frame x="321" y="20" width="1328" height="1071" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49915397" visible="true" weight="0.22476341" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49915397" visible="true" weight="0.22476341" />
       <window_info id="Structure" order="1" weight="0.27493918" />
       <window_info id="Favorites" order="2" sideWeight="0.500846" side_tool="true" weight="0.15860598" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -614,7 +611,7 @@
       <window_info anchor="bottom" id="运行" order="7" weight="0.311493" />
       <window_info anchor="bottom" id="Docker" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.38247862" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.38247862" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="bottom" id="调试" order="12" />
       <window_info anchor="bottom" id="Python Console" order="13" weight="0.6872964" />
@@ -1046,7 +1043,9 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/requirements.txt">
-      <provider selected="true" editor-type-id="text-editor" />
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1398" />
+      </provider>
     </entry>
   </component>
   <component name="masterDetails">

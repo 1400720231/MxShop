@@ -101,7 +101,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mxshop',
-        'HOST': '106.12.112.146',
+        'HOST': '127.0.0.1',
         'USER': 'root',
         'PASSWORD': 'root',
         'PORT': '3306',
