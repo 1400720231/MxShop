@@ -25,7 +25,7 @@ from goods.view_base import  GoodList
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from trade.views import ShoppingCartViewset
-from goods.views import IndexCategoryViewset,GoodstViewSet, CategoryViewset,BannerViewset
+from goods.views import IndexCategoryViewset,GoodstViewSet, CategoryViewset,BannerViewset,pandaviewset
 from users.views import SmsCodeViewset,UserViewset
 from trade.views import OrderViewset
 from user_operation.views import UserFavViewset,LeavingMessageViewset,AddressViewset
@@ -60,7 +60,8 @@ router.register(r'orders', OrderViewset, base_name='orders')
 router.register(r'banners', BannerViewset, base_name='banners')
 # 首页商品系列数据
 router.register(r'indexgoods',IndexCategoryViewset , base_name='indexgoods')
-
+# 临时验证测测试路由
+router.register(r'panda',pandaviewset, base_name='panda')
 
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),

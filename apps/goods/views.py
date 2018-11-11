@@ -270,7 +270,6 @@ class GoodstViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.G
         return Response(serializer.data)
 
 
-
 class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     list:
@@ -281,17 +280,22 @@ class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets
     serializer_class = CategorySerializer
 
 
-
+# 首页轮播图
 class BannerViewset(mixins.ListModelMixin,
                     viewsets.GenericViewSet):
-
     queryset = Banner.objects.all().order_by("index")
     serializer_class = BannerSerializer
 
 
-
-class IndexCategoryViewset(mixins.ListModelMixin,viewsets.GenericViewSet):
-
-
+# 首页点击导航第一类对应的Goods数据
+class IndexCategoryViewset(mixins.ListModelMixin, viewsets.GenericViewSet):
     queryset = GoodsCategory.objects.filter(is_tab=True)
     serializer_class = IndexCategorySerializer
+
+
+# 测试路由
+from .serializer import TempSerialiser
+class pandaviewset(mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = GoodsCategory.objects.filter(category_type=1)
+    serializer_class = CategorySerializer
+

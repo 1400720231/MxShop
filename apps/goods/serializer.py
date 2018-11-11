@@ -66,7 +66,7 @@ a.sub_cat.all()
 """
 
 
-class  CategorySerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     sub_cat = CategorySerializer2(many=True)
 
     class Meta:
@@ -144,10 +144,17 @@ class IndexCategorySerializer(serializers.ModelSerializer):
     def get_goods(self, obj):
         all_goods = Goods.objects.filter(Q(category_id=obj.id)|Q(category__parents_category_id=obj.id)\
                                    |Q(category__parents_category__parents_category_id=obj.id))
-
         goods_serializer = GoodsSerializer(all_goods, many=True)
         return goods_serializer.data
 
     class Meta:
-        model =GoodsCategory
+        model = GoodsCategory
+        fields = "__all__"
+
+
+class TempSerialiser(serializers.ModelSerializer):
+    # sub_cat = CategorySerializer2(many=True)
+
+    class Meta:
+        model = CategorySerializer
         fields = "__all__"
