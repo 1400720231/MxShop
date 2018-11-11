@@ -206,7 +206,17 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-)
+),
+    # 访问限制配置
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',# 不登录配置（ip判断）
+        'rest_framework.throttling.UserRateThrottle' # 登陆配置（session 判断）
+    ),
+    #  对应的两种状态的访问闲置
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '1/second', # 1秒钟1次
+        'user': '1000/day' # 一天1000次
+    }
 }
 
 
@@ -227,3 +237,4 @@ REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
 REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 5
 }
+
