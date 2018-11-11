@@ -18,6 +18,8 @@ from rest_framework import viewsets
 # drf 过滤
 from django_filters.rest_framework import DjangoFilterBackend
 
+
+from rest_framework_extensions.cache.mixins import CacheResponseMixin
 """
 最底层的drf APIView,继承与django的View(from django.views.generic.base import View)
 和直接继承View大体差不多，需要重写get post方法。
@@ -236,13 +238,15 @@ from .filters import ProductFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 
-class GoodstViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+class GoodstViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     DjangoFilterBackend  过滤功能
     ProductFilter 自定义过滤功能
 
     SearchFilter  搜索功能
     OrderingFilter  排序功能
+    CacheResponseMixin: Drf缓存功能，缓存时间配置在settings.py中，
+    github地址： https://github.com/chibisov/drf-extensions
     """
     queryset = Goods.objects.all()  # get_queryse重载后这个就没有用了
     serializer_class = GoodsSerializer  # 序列化器
