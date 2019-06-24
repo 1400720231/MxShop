@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import UserFav, UserLeavingMessage,UserAddress
-from rest_framework.validators import UniqueTogetherValidator
+from rest_framework.validators import UniqueTogetherValidator,UniqueValidator
 from goods.serializer import GoodsSerializer
 
 

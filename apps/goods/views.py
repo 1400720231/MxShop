@@ -67,17 +67,18 @@ GenericAPIView:
 mixins.ListModelMixin:
         提供GET方法的功能返回serializer.data，实现了方式一中的get功能
         
+"""
 
 
 class GoodstListView(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Goods.objects.all()[:10]
     serializer_class = GoodsSerializer
 
-    def get(self,request,*args,**kwargs):
-        return self.list(request,*args,**kwargs)
+    # def get(self,request,*args,**kwargs):
+    #     return self.list(request,*args,**kwargs)
 
 
-"""
+
 
 """
 方式三：generics.ListAPIView并且实现自定义分页功能
@@ -236,8 +237,8 @@ class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
 
 from .filters import ProductFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
-
-
+from rest_framework.permissions import IsAdminUser
+IsAdminUser
 class GoodstViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     DjangoFilterBackend  过滤功能
@@ -293,13 +294,38 @@ class BannerViewset(mixins.ListModelMixin,
 
 # 首页点击导航第一类对应的Goods数据
 class IndexCategoryViewset(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = GoodsCategory.objects.filter(is_tab=True)
+    queryset = GoodsCategory.objects.filter()
     serializer_class = IndexCategorySerializer
 
 
-# 测试路由
+# 测试路由1
 from .serializer import TempSerialiser
-class pandaviewset(mixins.ListModelMixin, viewsets.GenericViewSet):
-    queryset = GoodsCategory.objects.filter(category_type=1)
-    serializer_class = CategorySerializer
+from .serializer import GoodsSerializer1
 
+
+class pandaviewset(mixins.ListModelMixin, mixins.CreateModelMixin,viewsets.GenericViewSet):
+    queryset =  Goods.objects.all()[:4]
+    serializer_class = GoodsSerializer1
+
+# 自己用的测试2
+from .models import PandaTest
+from .serializer import PandaTestSerialiser
+class PandaTestViewt(mixins.ListModelMixin, mixins.CreateModelMixin,viewsets.GenericViewSet):
+    queryset =  PandaTest.objects.all()
+    serializer_class = PandaTestSerialiser
+
+# 测试路由3
+from .models import GoodsCategory
+from .serializer import GoodsCategorySerializertest
+class GoodsCategorySerializerTEST(mixins.ListModelMixin, mixins.CreateModelMixin,viewsets.GenericViewSet):
+    queryset =  GoodsCategory.objects.all()
+    serializer_class = GoodsCategorySerializertest
+
+
+# 测试路由4
+
+from .models import Goods
+from .serializer import goodsSerializertest
+class goodsSerializertestviewst(mixins.ListModelMixin, mixins.CreateModelMixin,viewsets.GenericViewSet):
+    queryset =  Goods.objects.all()
+    serializer_class = goodsSerializertest

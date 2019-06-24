@@ -65,7 +65,7 @@ class Goods(models.Model):
 	商品
 		UEditorField：
 	"""
-	category = models.ForeignKey(GoodsCategory, verbose_name='商品类目')
+	category = models.ForeignKey(GoodsCategory, verbose_name='商品类目',related_name='categorys')
 	goods_sn = models.CharField(max_length=50,default='',verbose_name='商品唯一货号')
 	name = models.CharField(max_length=300, verbose_name='商品名')
 	click_num = models.IntegerField(default=0,verbose_name='点击数')
@@ -89,7 +89,7 @@ class Goods(models.Model):
 		verbose_name_plural = verbose_name
 
 	def __str__(self):
-		return self.name
+		return self.name+'xxx'
 
 
 class GoodsImages(models.Model):
@@ -124,3 +124,18 @@ class Banner(models.Model):
 
 	def __str__(self):
 		return self.goods.name
+
+
+class PandaTest(models.Model):
+	name = models.CharField(max_length=300,null=True,blank=True,verbose_name='姓名')
+	age = models.IntegerField(default=0, null=True, blank=True, verbose_name='年龄')
+
+	def name_age(self):
+		return  self.name
+
+	class Meta:
+		verbose_name = '测试用'
+		verbose_name_plural = verbose_name
+
+	def __str__(self):
+		return self.name

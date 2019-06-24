@@ -3,9 +3,10 @@ from .models import Goods,GoodsCategoryBrand, GoodsCategory, GoodsImages, Banner
 from django.db.models import Q
 """
 drf方式一：serializers.Serializer，类似django的form定义，字段一定要和model中的字段名字一样，类型一样
+"""
 
 
-class GoodsSerializer(serializers.Serializer):
+class GoodsSerializer1(serializers.Serializer):
     name = serializers.CharField(required=True, max_length=100)
     click_num = serializers.IntegerField(default=0)
     goods_front_image = serializers.ImageField()
@@ -14,7 +15,7 @@ class GoodsSerializer(serializers.Serializer):
     # 重载create函数，可以接受数据，save()到数据库
     def create(self, validated_data):
         return  Goods.objects.create(**validated_data)
-"""
+
 
 """
 drf方式二：serializers.ModelSerializer，和django中的ModelForm
@@ -23,7 +24,7 @@ drf方式二：serializers.ModelSerializer，和django中的ModelForm
 但是外键字段还是显示的外键字段的id，要想把外键的对象也全部序列化出来，请看
 方式三        
 
-class GoodsSerializer(serializers.ModelSerializer):
+class GoodsSerializer2(serializers.ModelSerializer):
     class Meta:
         model = Goods
         # 可以指定需要序列化的字段
@@ -158,3 +159,62 @@ class TempSerialiser(serializers.ModelSerializer):
     class Meta:
         model = CategorySerializer
         fields = "__all__"
+
+
+# ---------------下面是测试序列化-----------------
+
+from rest_framework.validators import UniqueTogetherValidator
+from .models import PandaTest
+class PandaTestSerialiser(serializers.ModelSerializer):
+    name = serializers.CharField(required=True, help_text='这是help_text',
+
+                                 allow_null=False,
+                                 allow_blank=False,
+                                 error_messages={"required":"改字段是必填字段---required",
+                                                 "null":"不允许内容为None--allow_null",
+                                                 "blank":"不允许为空--allow_blank"
+
+                                                  })
+
+    age = serializers.IntegerField(min_value=10,label='这是age的label',error_messages={"min_value":"最小值为10"})
+    # name_and_age = serializers.CharField(source='name_age')
+    class Meta:
+        model = PandaTest
+        validators = [
+            UniqueTogetherValidator(
+                queryset=PandaTest.objects.all(),
+                fields=('name', 'age'),
+                message = ("{field_names}数据重复")
+            )
+        ]
+        fields = ('id','name','age','name_age')
+# --------------
+from .models import GoodsCategory
+class GoodsCategorySerializertest(serializers.ModelSerializer):
+    categorys = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    #categorys =  serializers.StringRelatedField(many=True)
+
+
+    class Meta:
+        model = GoodsCategory
+        fields = ('name', 'category_type', 'categorys')
+# --------------
+
+
+
+class CategorySerializerTest(serializers.ModelSerializer):
+    class Meta:
+        model = GoodsCategory
+        # 可以指定需要序列化的字段
+        # fields = ('name',)
+        # 或者直接"__all__"序列化所有字段
+        fields = '__all__'
+
+
+class goodsSerializertest(serializers.ModelSerializer):
+    category = CategorySerializerTest() # category是Goods的字段，所以不用many=True
+
+    class Meta:
+        model = Goods
+        fields = "__all__"
+# -------------

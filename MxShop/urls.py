@@ -25,7 +25,8 @@ from goods.view_base import  GoodList
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from trade.views import ShoppingCartViewset
-from goods.views import IndexCategoryViewset,GoodstViewSet, CategoryViewset,BannerViewset,pandaviewset
+from goods.views import IndexCategoryViewset,GoodstViewSet, CategoryViewset,BannerViewset,pandaviewset,\
+    GoodstListView,PandaTestViewt,GoodsCategorySerializerTEST,goodsSerializertestviewst
 from users.views import SmsCodeViewset,UserViewset
 from trade.views import OrderViewset
 from user_operation.views import UserFavViewset,LeavingMessageViewset,AddressViewset
@@ -33,10 +34,14 @@ from rest_framework.authtoken import views
 from rest_framework_jwt.views import obtain_jwt_token
 
 router = DefaultRouter()
-# goods_list = GoodstListView.as_view({
-#     'get': 'list',
-#
-# })
+
+"""
+
+这种映射的方式只适合GoodstViewSet这种，因为这种视图函数中的ViewSetMixin重写了as_view()方法，提供了可以绑定method:action这种选择
+goods_list = GoodstViewSet.as_view({
+    'get':'list'
+})
+"""
 # base_name 路由名称的前缀
 # 商品
 router.register(r'goods', GoodstViewSet, base_name='goods')
@@ -62,7 +67,9 @@ router.register(r'banners', BannerViewset, base_name='banners')
 router.register(r'indexgoods',IndexCategoryViewset , base_name='indexgoods')
 # 临时验证测测试路由
 router.register(r'panda',pandaviewset, base_name='panda')
-
+router.register(r'test',PandaTestViewt, base_name='test')
+router.register(r'goodscategorytestViewt',GoodsCategorySerializerTEST, base_name='goodscategorytest')
+router.register(r'goodsSerializertestviewst',goodsSerializertestviewst, base_name='goodstest')
 urlpatterns = [
     url(r'^xadmin/', xadmin.site.urls),
     url(r'^ueditor/', include('DjangoUeditor.urls')),
@@ -87,11 +94,11 @@ urlpatterns = [
     # jwt的认证接口,返回jwt token值
     url(r'^login/', obtain_jwt_token),
 
-    # drf 路由，views.py中的方式一 、二、三都可以用这个路由
-    # url(r'goods/$', GoodstListView.as_view(), name='goods-list'),
+    # mixin+Generic方式对应的路由
+    # url(r'mixin_view_generic/$', GoodstListView.as_view(), name='mixin_view_generic'),
 
-    # viewset方式对应的路由形式
-    # url(r'goods/$', goods_list, name='goods-list'),
+    # View方式对应的路由形式
+    # url(r'view_base_goods/$', GoodList.as_view(), name='view_base_goods'),
     # drf文档路由
     url(r'docs/', include_docs_urls(title="小熊drf文档界面"))
 ]

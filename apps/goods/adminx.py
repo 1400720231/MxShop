@@ -1,7 +1,7 @@
 import xadmin
 
 from .models import GoodsCategory, GoodsCategoryBrand
-from .models import Goods, GoodsImages, Banner
+from .models import Goods, GoodsImages, Banner,PandaTest
 
 
 """
@@ -64,8 +64,13 @@ class BannerAdmin(object):
     list_filter = ['goods','image','index','add_time']
 
 
+class PandaTestAdmin(object):
+    list_display = ['name', 'age']
+
+
 xadmin.site.register(GoodsCategory,GoodsCategoryAdmin)
 xadmin.site.register(GoodsCategoryBrand,GoodsCategoryBrandAdmin)
 xadmin.site.register(Goods,GoodsAdmin)
 xadmin.site.register(GoodsImages,GoodsImagesAdmin)
 xadmin.site.register(Banner,BannerAdmin)
+xadmin.site.register(PandaTest, PandaTestAdmin)

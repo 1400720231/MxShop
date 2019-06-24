@@ -200,11 +200,13 @@ drf 全局配置:REST_FRAMEWORK配置，比如分页等。
 authentication_class = ('Authentication', 'SessionAuthentication')
 }
 """
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import  SessionAuthentication
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 这个是http验证，用jwt好像没什么用了。。。我把它注释了，也还是能获取数据。。。
         'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
 ),
     # 访问限制配置

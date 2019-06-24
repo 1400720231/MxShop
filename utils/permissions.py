@@ -22,5 +22,5 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 注意这里的
     return obj.user == request.user
 model中的字段是user,obj.user才是这样，
-要是model中的字段是xxx,那这里就是obj.xxx
+要是model中的字段是xxx,那这里就是obj.xxx  == request.user
 """
