@@ -11,6 +11,7 @@ from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.request import Request
 from rest_framework import status
 from rest_framework import generics
 from rest_framework import mixins
@@ -150,6 +151,8 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = "page_size"  # 自定义获取每页数据数量的参数，最大不会超过max_page_size=100
     page_query_param = "page"  # 第几页
     max_page_size = 100  # 每页最大回去个数
+    page_query_description = '页码'
+    page_size_query_description = '每页最大获取数'
 
 
 """
@@ -237,6 +240,19 @@ from .filters import ProductFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAdminUser
 
+from .exceptions import NotAuthenticated
+from rest_framework import exceptions
+
+
+class SearchFilter2(SearchFilter):
+    search_title = '搜索内容'
+    search_description = '搜索内容'
+
+
+class OrderingFilter2(OrderingFilter):
+    ordering_description = '排序'
+    ordering_description = '排序'
+
 
 class GoodstViewSet(CacheResponseMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.CreateModelMixin,
                     viewsets.GenericViewSet):
@@ -253,20 +269,32 @@ class GoodstViewSet(CacheResponseMixin, mixins.RetrieveModelMixin, mixins.ListMo
     serializer_class = GoodsSerializer  # 序列化器
     pagination_class = StandardResultsSetPagination  # 分页器
     # 这里的元组一定要加逗号！！！！不然后报错！！！
-    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)  # 过滤器，是django的过滤器，
+    filter_backends = (DjangoFilterBackend, SearchFilter2, OrderingFilter2)  # 过滤器，是django的过滤器，
     filter_class = ProductFilter
     # DjangoFilterBackend对应的搜索字段声明，但是因为有了自定义的ProductFilter，filter_fields是无效的
     # 以ProductFilter中的fields字段为准
     # filter_fields = ("is_hot",)
     # SearchFilter指定搜索字段=name表示精确匹配，^goods_desc表示以搜索字段开头的内容（正则）
     search_fields = ('name', '^goods_desc', 'goods_brief')
+
     # OrderingFilter指定排序指端| 根据sold_num和add_time,shop_price排序
     # 也可以指定非时间或者数字字段排序，比如这里的name，但是好像从排序结果来看没有什么意义。。。
     ordering_fields = ('sold_num', 'add_time', 'shop_price', 'name')
+
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
 
+    # 自定义返回错误消息
+    def permission_denied(self, request, message=None):
+        """
+        If request is not permitted, determine what kind of exception to raise.
+        """
+        if request.authenticators and not request.successful_authenticator:
+            raise NotAuthenticated()
+        raise exceptions.PermissionDenied(detail=message)
+
     def list(self, request, *args, **kwargs):
+
         import json
         queryset = self.filter_queryset(self.get_queryset())
         print(queryset)
@@ -296,6 +324,10 @@ class GoodstViewSet(CacheResponseMixin, mixins.RetrieveModelMixin, mixins.ListMo
 
     # 点击的时候会获取详情，所以在这里做点击或者访问数量+1的操作
     def retrieve(self, request, *args, **kwargs):
+        """
+        获取商品详情接口,
+        """
+        print(request._request)
         instance = self.get_object()
         instance.click_num += 1
         instance.save()
