@@ -22,9 +22,9 @@ class ProductFilter(django_filters.rest_framework.FilterSet):
     label='最大价格' 表示站点搜索框的抬头字段，不指定该参数的话，抬头显示字段为Goods models中的verbose_name值
     """
     pricemin = django_filters.NumberFilter(field_name='shop_price', lookup_expr='gte', help_text="最小值")
-    pricemax = django_filters.NumberFilter(field_name='shop_price', lookup_expr='lte',  label='最大价格')
-    top_category = django_filters.NumberFilter(method='top_category_filter', label='自定义搜索框')
-    is_hot = django_filters.BooleanFilter(field_name='is_hot', label="是否热销")
+    pricemax = django_filters.NumberFilter(field_name='shop_price', lookup_expr='lte',  label='最大价格',help_text="最大价格")
+    top_category = django_filters.NumberFilter(method='top_category_filter', label='自定义搜索框',help_text='自定义搜索框')
+    is_hot = django_filters.BooleanFilter(field_name='is_hot', label="是否热销",help_text='是否热销')
 
     # 自定义一个搜索方法，传参给method，表示top_category输入的字段用改方法筛选过滤
     def top_category_filter(self, queryset, name, value):
