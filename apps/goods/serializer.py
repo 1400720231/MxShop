@@ -1,6 +1,7 @@
 from rest_framework import serializers
-from .models import Goods,GoodsCategoryBrand, GoodsCategory, GoodsImages, Banner
+from .models import Goods, GoodsCategoryBrand, GoodsCategory, GoodsImages, Banner
 from django.db.models import Q
+
 """
 drf方式一：serializers.Serializer，类似django的form定义，字段一定要和model中的字段名字一样，类型一样
 """
@@ -14,7 +15,7 @@ class GoodsSerializer1(serializers.Serializer):
 
     # 重载create函数，可以接受数据，save()到数据库
     def create(self, validated_data):
-        return  Goods.objects.create(**validated_data)
+        return Goods.objects.create(**validated_data)
 
 
 """
@@ -33,7 +34,6 @@ class GoodsSerializer2(serializers.ModelSerializer):
         fields = '__all__'
 """
 
-
 """
 方式三： 把外键字段单独拿出来序列化，然后在上一级的序列化中嵌套使用就行
 """
@@ -51,6 +51,7 @@ class CategorySerializer2(serializers.ModelSerializer):
     class Meta:
         model = GoodsCategory
         fields = "__all__"
+
 
 """
 这是一个一级序列化器，根据 一对多的概念把所有指向当前实例的其他实例序列化处出来。
@@ -143,8 +144,8 @@ class IndexCategorySerializer(serializers.ModelSerializer):
     sub_cat = CategorySerializer2(many=True)
 
     def get_goods(self, obj):
-        all_goods = Goods.objects.filter(Q(category_id=obj.id)|Q(category__parents_category_id=obj.id)\
-                                   |Q(category__parents_category__parents_category_id=obj.id))
+        all_goods = Goods.objects.filter(Q(category_id=obj.id) | Q(category__parents_category_id=obj.id) \
+                                         | Q(category__parents_category__parents_category_id=obj.id))
         goods_serializer = GoodsSerializer(all_goods, many=True)
         return goods_serializer.data
 
@@ -165,18 +166,21 @@ class TempSerialiser(serializers.ModelSerializer):
 
 from rest_framework.validators import UniqueTogetherValidator
 from .models import PandaTest
+
+
 class PandaTestSerialiser(serializers.ModelSerializer):
     name = serializers.CharField(required=True, help_text='这是help_text',
 
                                  allow_null=False,
                                  allow_blank=False,
-                                 error_messages={"required":"改字段是必填字段---required",
-                                                 "null":"不允许内容为None--allow_null",
-                                                 "blank":"不允许为空--allow_blank"
+                                 error_messages={"required": "改字段是必填字段---required",
+                                                 "null": "不允许内容为None--allow_null",
+                                                 "blank": "不允许为空--allow_blank"
 
-                                                  })
+                                                 })
 
-    age = serializers.IntegerField(min_value=10,label='这是age的label',error_messages={"min_value":"最小值为10"})
+    age = serializers.IntegerField(min_value=10, label='这是age的label', error_messages={"min_value": "最小值为10"})
+
     # name_and_age = serializers.CharField(source='name_age')
     class Meta:
         model = PandaTest
@@ -184,22 +188,27 @@ class PandaTestSerialiser(serializers.ModelSerializer):
             UniqueTogetherValidator(
                 queryset=PandaTest.objects.all(),
                 fields=('name', 'age'),
-                message = ("{field_names}数据重复")
+                message=("{field_names}数据重复")
             )
         ]
-        fields = ('id','name','age','name_age')
+        fields = ('id', 'name', 'age', 'name_age')
+
+
 # --------------
 from .models import GoodsCategory
+
+
 class GoodsCategorySerializertest(serializers.ModelSerializer):
     categorys = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
-    #categorys =  serializers.StringRelatedField(many=True)
 
+    # categorys =  serializers.StringRelatedField(many=True)
 
     class Meta:
         model = GoodsCategory
         fields = ('name', 'category_type', 'categorys')
-# --------------
 
+
+# --------------
 
 
 class CategorySerializerTest(serializers.ModelSerializer):
@@ -212,7 +221,7 @@ class CategorySerializerTest(serializers.ModelSerializer):
 
 
 class goodsSerializertest(serializers.ModelSerializer):
-    category = CategorySerializerTest() # category是Goods的字段，所以不用many=True
+    category = CategorySerializerTest()  # category是Goods的字段，所以不用many=True
 
     class Meta:
         model = Goods
