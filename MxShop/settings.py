@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 import os
 import sys
 import datetime
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 # 表示最外面的那个MxShop文件夹的路径,注意是路径.,不是文件夹的名字.
 # from django.conf.global_settings import AUTHENTICATION_BACKENDS
@@ -59,7 +60,6 @@ INSTALLED_APPS = [
     # 'rest_framework.authtoken', # 会新建一张表
 ]
 
-
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # corsheaders对应的中间件，优先级尽可能的高，也就是放在最前面
     'django.middleware.security.SecurityMiddleware',
@@ -93,7 +93,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MxShop.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
@@ -102,8 +101,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mxshop',
         'HOST': '127.0.0.1',
-        'USER': 'root',
-        'PASSWORD': 'root',
+        'USER': 'mxshop',
+        'PASSWORD': '12345678',
         'PORT': '3306',
         'OPTIONS': {'init_command': 'SET default_storage_engine=INNODB;'}
     }
@@ -135,7 +134,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
@@ -147,8 +145,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = False # 默认是True,时间是utc时间,由于我们要用本地时间,所有false
-
+USE_TZ = False  # 默认是True,时间是utc时间,由于我们要用本地时间,所有false
 
 # # 配置自定义的登陆认证函数
 AUTHENTICATION_BACKENDS = (
@@ -163,7 +160,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
 
-
 MEDIA_URL = '/media/'  # 不能随便取 因为用的时候src="{{MEDIA_URL}}/image/..."表示按照这个路径找
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 """
@@ -175,10 +171,6 @@ MEDIA_ROOT只能设置一个，不然她不知道到底存放再哪里，和stat
 
 # 跨域增加忽略
 CORS_ORIGIN_ALLOW_ALL = True
-
-
-
-
 
 """
 drf 全局配置:REST_FRAMEWORK配置，比如分页等。
@@ -201,26 +193,26 @@ authentication_class = ('Authentication', 'SessionAuthentication')
 }
 """
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.authentication import  SessionAuthentication
+from rest_framework.authentication import SessionAuthentication
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 这个是http验证，用jwt好像没什么用了。。。我把它注释了，也还是能获取数据。。。
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-),
+    ),
     # 访问限制配置
     'DEFAULT_THROTTLE_CLASSES': (
-        'rest_framework.throttling.AnonRateThrottle',# 不登录配置（ip判断）
-        'rest_framework.throttling.UserRateThrottle' # 登陆配置（session 判断）
+        'rest_framework.throttling.AnonRateThrottle',  # 不登录配置（ip判断）
+        'rest_framework.throttling.UserRateThrottle'  # 登陆配置（session 判断）
     ),
     #  对应的两种状态的访问闲置
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '1/second', # 1秒钟1次
-        'user': '1000/day' # 一天1000次
+        'anon': '1/second',  # 1秒钟1次  不登录配置（ip判断）
+        'user': '1000/day'  # 一天1000次 登陆配置（session 判断）
     }
 }
-
 
 # JWT_AUTH ：声明JWT_AUTH相关全局配置
 # jwt-token的过期时间设置,days=7表示获取一次jwt token可以用7天
@@ -228,15 +220,12 @@ JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=6),
     # 自定义header = {'Authenticate':'JWT jwt-token'}中的这个JWT参数，这里我没改
     'JWT_AUTH_HEADER_PREFIX': 'JWT',
-            }
-
+}
 
 # 手机号码正则表达式
 REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
-
 
 # 缓存时间全局配置，比如下面的5s
 REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_CACHE_RESPONSE_TIMEOUT': 5
 }
-
