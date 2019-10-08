@@ -5,8 +5,8 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
-from .models import Goods, GoodsCategory,Banner
-from goods.serializer import IndexCategorySerializer,BannerSerializer,GoodsSerializer, CategorySerializer
+from .models import Goods, GoodsCategory, Banner
+from goods.serializer import IndexCategorySerializer, BannerSerializer, GoodsSerializer, CategorySerializer
 from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 from rest_framework.views import APIView
@@ -18,8 +18,8 @@ from rest_framework import viewsets
 # drf 过滤
 from django_filters.rest_framework import DjangoFilterBackend
 
-
 from rest_framework_extensions.cache.mixins import CacheResponseMixin
+
 """
 最底层的drf APIView,继承与django的View(from django.views.generic.base import View)
 和直接继承View大体差不多，需要重写get post方法。
@@ -76,8 +76,6 @@ class GoodstListView(mixins.ListModelMixin, generics.GenericAPIView):
 
     # def get(self,request,*args,**kwargs):
     #     return self.list(request,*args,**kwargs)
-
-
 
 
 """
@@ -238,8 +236,10 @@ class GoodstListView(mixins.ListModelMixin, viewsets.GenericViewSet):
 from .filters import ProductFilter
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.permissions import IsAdminUser
-IsAdminUser
-class GoodstViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+
+
+class GoodstViewSet(CacheResponseMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.CreateModelMixin,
+                    viewsets.GenericViewSet):
     """
     DjangoFilterBackend  过滤功能
     ProductFilter 自定义过滤功能
@@ -266,13 +266,45 @@ class GoodstViewSet(CacheResponseMixin, mixins.ListModelMixin, mixins.RetrieveMo
     permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication, SessionAuthentication)
 
+    def list(self, request, *args, **kwargs):
+        import json
+        queryset = self.filter_queryset(self.get_queryset())
+        print(queryset)
+        page = self.paginate_queryset(queryset)
+        print(page)
+        print(type(page))
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            print('serializer.data', serializer.data)
+            print(str(json.dumps(serializer.data)))
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response(serializer.data)
+
+    #
+    # def get_serializer(self, *args, **kwargs):
+    #     """
+    #     Return the serializer instance that should be used for validating and
+    #     deserializing input, and for serializing output.
+    #     """
+    #     serializer_class = self.get_serializer_class()
+    #     kwargs['context'] = self.get_serializer_context()
+    #     print('*********args-------', args, '\n', '*********kwargs-------', kwargs)
+    #     return serializer_class(*args, **kwargs)
+
     # 点击的时候会获取详情，所以在这里做点击或者访问数量+1的操作
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.click_num += 1
         instance.save()
         serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        print(serializer.data)
+        data = serializer.data
+        data['这是额外字段'] = '这是额外字段'
+
+        return Response(data)
 
 
 class CategoryViewset(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
@@ -303,22 +335,28 @@ from .serializer import TempSerialiser
 from .serializer import GoodsSerializer1
 
 
-class pandaviewset(mixins.ListModelMixin, mixins.CreateModelMixin,viewsets.GenericViewSet):
-    queryset =  Goods.objects.all()[:4]
+class pandaviewset(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Goods.objects.all()[:4]
     serializer_class = GoodsSerializer1
+
 
 # 自己用的测试2
 from .models import PandaTest
 from .serializer import PandaTestSerialiser
-class PandaTestViewt(mixins.ListModelMixin, mixins.CreateModelMixin,viewsets.GenericViewSet):
-    queryset =  PandaTest.objects.all()
+
+
+class PandaTestViewt(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = PandaTest.objects.all()
     serializer_class = PandaTestSerialiser
+
 
 # 测试路由3
 from .models import GoodsCategory
 from .serializer import GoodsCategorySerializertest
-class GoodsCategorySerializerTEST(mixins.ListModelMixin, mixins.CreateModelMixin,viewsets.GenericViewSet):
-    queryset =  GoodsCategory.objects.all()
+
+
+class GoodsCategorySerializerTEST(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = GoodsCategory.objects.all()
     serializer_class = GoodsCategorySerializertest
 
 
@@ -326,6 +364,8 @@ class GoodsCategorySerializerTEST(mixins.ListModelMixin, mixins.CreateModelMixin
 
 from .models import Goods
 from .serializer import goodsSerializertest
-class goodsSerializertestviewst(mixins.ListModelMixin, mixins.CreateModelMixin,viewsets.GenericViewSet):
-    queryset =  Goods.objects.all()
+
+
+class goodsSerializertestviewst(mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = Goods.objects.all()
     serializer_class = goodsSerializertest
